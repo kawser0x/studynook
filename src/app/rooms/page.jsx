@@ -1,90 +1,128 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useCallback } from "react";
 import AllRooms from "@/components/AllRooms";
-import { FaSearch, FaTimes, FaFilter } from "react-icons/fa";
+import { FaSearch, FaTimes, FaFilter, FaRedo } from "react-icons/fa";
+
+const AVAILABLE_AMENITIES = [
+  "Wi-Fi",
+  "Whiteboard",
+  "Power Outlets",
+  "AC",
+  "Monitor",
+  "Soundproof",
+  "Projector",
+];
 
 const RoomsPage = () => {
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Filter States
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedAmenities, setSelectedAmenities] = useState([]);
   const [selectedFloor, setSelectedFloor] = useState("all");
+  const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
 
-  useEffect(() => {
-    const fetchRooms = async () => {
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/rooms`,
-          { cache: "no-store" },
-        );
-        const data = await res.json();
-        setRooms(Array.isArray(data) ? data : []);
-      } 
-    finally {
-        setLoading(false);
+  // Available floors for dropdown
+  const [availableFloors, setAvailableFloors] = useState([]);
+
+  // Fetch rooms using query params
+  const fetchRooms = useCallback(async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+
+      if (searchTerm.trim()) params.append("search", searchTerm.trim());
+      if (selectedFloor !== "all") params.append("floor", selectedFloor);
+      if (minPrice) params.append("minPrice", minPrice);
+      if (maxPrice) params.append("maxPrice", maxPrice);
+      if (selectedAmenities.length > 0) {
+        params.append("amenities", selectedAmenities.join(","));
       }
-    };
-    fetchRooms();
-  }, []);
 
-  const floorOptions = useMemo(() => {
-    const floors = rooms.map((r) => r.floor).filter(Boolean);
-    return Array.from(new Set(floors));
-  }, [rooms]);
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/rooms?${params.toString()}`,
+        { cache: "no-store" },
+      );
+      const data = await res.json();
+      const loadedRooms = Array.isArray(data) ? data : [];
+      setRooms(loadedRooms);
 
-  const filteredRooms = useMemo(() => {
-    return rooms.filter((room) => {
-      const query = searchTerm.toLowerCase().trim();
-
-      const matchesSearch =
-        !query ||
-        room.name?.toLowerCase().includes(query) ||
-        room.shortDescription?.toLowerCase().includes(query) ||
-        room.amenities?.some((amenity) =>
-          amenity.toLowerCase().includes(query),
+      // Populate floor dropdown from unfiltered list initially
+      if (availableFloors.length === 0 && loadedRooms.length > 0) {
+        const floors = Array.from(
+          new Set(loadedRooms.map((r) => r.floor).filter(Boolean)),
         );
+        setAvailableFloors(floors);
+      }
+    } catch (error) {
+      console.error("Failed to load rooms:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [searchTerm, selectedAmenities, selectedFloor, minPrice, maxPrice]);
 
-      const matchesFloor =
-        selectedFloor === "all" || room.floor === selectedFloor;
+  // Debounced API call on filter changes
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchRooms();
+    }, 350);
 
-      const matchesPrice =
-        !maxPrice || Number(room.hourlyRate) <= Number(maxPrice);
+    return () => clearTimeout(timer);
+  }, [fetchRooms]);
 
-      return matchesSearch && matchesFloor && matchesPrice;
-    });
-  }, [rooms, searchTerm, selectedFloor, maxPrice]);
+  // Handle Amenity Checkbox Toggles
+  const handleAmenityChange = (amenity) => {
+    setSelectedAmenities((prev) =>
+      prev.includes(amenity)
+        ? prev.filter((item) =>
+            (item !== item) === amenity ? false : item !== amenity,
+          )
+        : [...prev, amenity],
+    );
+  };
 
   const handleResetFilters = () => {
     setSearchTerm("");
+    setSelectedAmenities([]);
     setSelectedFloor("all");
+    setMinPrice("");
     setMaxPrice("");
   };
+
+  const isFiltered =
+    Boolean(searchTerm) ||
+    selectedAmenities.length > 0 ||
+    selectedFloor !== "all" ||
+    Boolean(minPrice) ||
+    Boolean(maxPrice);
 
   return (
     <div className="min-h-screen bg-base-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-       
+        {/* Header */}
         <div className="mb-6">
           <h1 className="text-3xl font-bold tracking-tight text-base-content sm:text-4xl">
             Available Study Rooms
           </h1>
           <p className="mt-2 text-sm text-base-content/70">
-            Choose from quiet individual booths, pair study nooks, or group
-            labs.
+            Search by room name, filter by amenities, price range, or floor.
           </p>
         </div>
 
-        <div className="mb-8 rounded-2xl border border-base-300 bg-base-200/50 p-4 shadow-sm backdrop-blur-sm">
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-       
+        {/* Filter Control Box */}
+        <div className="mb-8 rounded-2xl border border-base-300 bg-base-200/50 p-5 shadow-sm backdrop-blur-sm">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {/* Search by Name ($regex) */}
             <div className="relative lg:col-span-2">
               <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-base-content/50">
                 <FaSearch className="h-4 w-4" />
               </span>
               <input
                 type="text"
-                placeholder="Search by room name, amenities, keyword..."
+                placeholder="Search by room name..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="input input-bordered w-full pl-9"
@@ -99,54 +137,95 @@ const RoomsPage = () => {
               )}
             </div>
 
+            {/* Floor Select */}
             <select
               value={selectedFloor}
               onChange={(e) => setSelectedFloor(e.target.value)}
               className="select select-bordered w-full">
               <option value="all">All Floors</option>
-              {floorOptions.map((floor) => (
+              {availableFloors.map((floor) => (
                 <option key={floor} value={floor}>
                   {floor}
                 </option>
               ))}
             </select>
 
-            <input
-              type="number"
-              placeholder="Max Rate ($/hr)"
-              value={maxPrice}
-              onChange={(e) => setMaxPrice(e.target.value)}
-              className="input input-bordered w-full"
-            />
+            {/* Price Range ($gte, $lte) */}
+            <div className="flex gap-2">
+              <input
+                type="number"
+                min="0"
+                placeholder="Min $"
+                value={minPrice}
+                onChange={(e) => setMinPrice(e.target.value)}
+                className="input input-bordered w-1/2"
+              />
+              <input
+                type="number"
+                min="0"
+                placeholder="Max $"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(e.target.value)}
+                className="input input-bordered w-1/2"
+              />
+            </div>
           </div>
 
-          <div className="mt-3 flex items-center justify-between px-1 text-xs text-base-content/70">
-            <span>
-              Showing{" "}
-              <strong className="text-base-content">
-                {filteredRooms.length}
-              </strong>{" "}
-              of {rooms.length} rooms
+          {/* Amenity Checkboxes ($in filter) */}
+          <div className="mt-4 border-t border-base-300 pt-4">
+            <span className="text-xs font-semibold uppercase tracking-wider text-base-content/70">
+              Filter by Amenities ($in)
             </span>
-            {(searchTerm || selectedFloor !== "all" || maxPrice) && (
+            <div className="mt-2 flex flex-wrap gap-2 sm:gap-3">
+              {AVAILABLE_AMENITIES.map((amenity) => {
+                const checked = selectedAmenities.includes(amenity);
+                return (
+                  <label
+                    key={amenity}
+                    className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors ${
+                      checked
+                        ? "border-primary bg-primary text-white"
+                        : "border-base-300 bg-base-100 text-base-content hover:bg-base-200"
+                    }`}>
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() => handleAmenityChange(amenity)}
+                      className="hidden"
+                    />
+                    {amenity}
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Status Counter & Clear Actions */}
+          <div className="mt-4 flex items-center justify-between border-t border-base-300 pt-3 text-xs text-base-content/70">
+            <span>
+              Found{" "}
+              <strong className="text-base-content">{rooms.length}</strong>{" "}
+              matching rooms
+            </span>
+            {isFiltered && (
               <button
                 type="button"
                 onClick={handleResetFilters}
-                className="link link-hover font-medium text-error">
-                Clear all filters
+                className="link link-hover flex items-center gap-1 font-medium text-error">
+                <FaRedo className="h-3 w-3" /> Reset all filters
               </button>
             )}
           </div>
         </div>
 
+        {/* Content Area */}
         {loading ? (
           <div className="flex h-64 items-center justify-center">
             <span className="loading loading-spinner loading-lg text-primary" />
           </div>
-        ) : filteredRooms.length > 0 ? (
-
+        ) : rooms.length > 0 ? (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredRooms.map((room) => (
+            {rooms.map((room) => (
               <AllRooms key={room._id} room={room} />
             ))}
           </div>
@@ -156,16 +235,17 @@ const RoomsPage = () => {
               <FaFilter className="h-5 w-5" />
             </div>
             <h3 className="mt-4 text-lg font-semibold text-base-content">
-              No matching rooms found
+              No rooms match your criteria
             </h3>
             <p className="mt-1 text-sm text-base-content/60">
-              Try adjusting your search terms or clearing current filters.
+              Try removing some amenities or broadening your price and search
+              terms.
             </p>
             <button
               type="button"
               onClick={handleResetFilters}
               className="btn btn-primary btn-sm mt-4 text-white">
-              Reset Filters
+              Clear Filters
             </button>
           </div>
         )}
