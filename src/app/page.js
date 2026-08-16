@@ -1,8 +1,9 @@
+import AddRoomPage from "./add-room/page";
 
 export default function Home() {
   return (
-    <div>
-      Home Page Layout 
+    <div className="">
+      Home Page Layout
     </div>
   );
 }

@@ -19,8 +19,28 @@ const Navbar = () => {
           Rooms
         </Link>
       </li>
-      {/* Show Sign In inside the drawer menu only on mobile */}
-      <li className="sm:hidden">
+      <li>
+        <Link
+          href="/add-room"
+          className="font-medium text-base-content/80 transition-colors hover:bg-base-200 hover:text-primary">
+          Add Room
+        </Link>
+      </li>
+      <li>
+        <Link
+          href="/my-listings"
+          className="font-medium text-base-content/80 transition-colors hover:bg-base-200 hover:text-primary">
+          My Listings
+        </Link>
+      </li>
+      <li>
+        <Link
+          href="/my-bookings"
+          className="font-medium text-base-content/80 transition-colors hover:bg-base-200 hover:text-primary">
+          My Bookings
+        </Link>
+      </li>
+      <li className="sm:hidden border-t border-base-300 pt-1 mt-1">
         <Link
           href="/signin"
           className="font-medium text-base-content/80 transition-colors hover:bg-base-200 hover:text-primary">
@@ -33,7 +53,6 @@ const Navbar = () => {
   return (
     <div className="sticky top-0 z-50 border-b border-base-300 bg-base-100/90 backdrop-blur-md">
       <div className="navbar mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-        {/* Left: Mobile Drawer + Brand */}
         <div className="navbar-start gap-1">
           <div className="dropdown">
             <div
@@ -56,7 +75,7 @@ const Navbar = () => {
             </div>
             <ul
               tabIndex={0}
-              className="menu menu-sm dropdown-content z-[1] mt-3 w-48 rounded-box border border-base-300 bg-base-100 p-2 shadow-lg">
+              className="menu menu-sm dropdown-content z-[1] mt-3 w-52 rounded-box border border-base-300 bg-base-100 p-2 shadow-lg">
               {navLinks}
             </ul>
           </div>
@@ -72,13 +91,15 @@ const Navbar = () => {
         </div>
 
         <div className="navbar-center hidden lg:flex">
-          <ul className="menu menu-horizontal gap-1 px-1">{navLinks}</ul>
+          <ul className="menu menu-horizontal gap-1 px-1 text-sm">
+            {navLinks}
+          </ul>
         </div>
 
         <div className="navbar-end gap-1.5 sm:gap-2">
           <Link
             href="/signin"
-            className="btn btn-primary  btn-xs hidden font-medium  text-white    sm:inline-flex sm:btn-sm">
+            className="btn btn-primary btn-xs hidden font-medium text-white sm:inline-flex sm:btn-sm">
             Sign In
           </Link>
           <Link
