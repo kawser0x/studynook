@@ -11,7 +11,6 @@ const RoomsPage = () => {
   const [selectedFloor, setSelectedFloor] = useState("all");
   const [maxPrice, setMaxPrice] = useState("");
 
-  // 1. Fetch rooms on mount
   useEffect(() => {
     const fetchRooms = async () => {
       try {
@@ -21,27 +20,23 @@ const RoomsPage = () => {
         );
         const data = await res.json();
         setRooms(Array.isArray(data) ? data : []);
-      } catch (error) {
-        console.error("Failed to load rooms:", error);
-      } finally {
+      } 
+    finally {
         setLoading(false);
       }
     };
     fetchRooms();
   }, []);
 
-  // 2. Generate floor options dynamically from loaded data
   const floorOptions = useMemo(() => {
     const floors = rooms.map((r) => r.floor).filter(Boolean);
     return Array.from(new Set(floors));
   }, [rooms]);
 
-  // 3. Filter logic for search keyword, floor, and maximum hourly price
   const filteredRooms = useMemo(() => {
     return rooms.filter((room) => {
       const query = searchTerm.toLowerCase().trim();
 
-      // Search keyword matches room name, description, or amenities
       const matchesSearch =
         !query ||
         room.name?.toLowerCase().includes(query) ||
@@ -50,11 +45,9 @@ const RoomsPage = () => {
           amenity.toLowerCase().includes(query),
         );
 
-      // Floor matching
       const matchesFloor =
         selectedFloor === "all" || room.floor === selectedFloor;
 
-      // Price matching
       const matchesPrice =
         !maxPrice || Number(room.hourlyRate) <= Number(maxPrice);
 
@@ -71,7 +64,7 @@ const RoomsPage = () => {
   return (
     <div className="min-h-screen bg-base-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        {/* Header Title */}
+       
         <div className="mb-6">
           <h1 className="text-3xl font-bold tracking-tight text-base-content sm:text-4xl">
             Available Study Rooms
@@ -82,10 +75,9 @@ const RoomsPage = () => {
           </p>
         </div>
 
-        {/* Search & Filter Bar */}
         <div className="mb-8 rounded-2xl border border-base-300 bg-base-200/50 p-4 shadow-sm backdrop-blur-sm">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {/* Search Input */}
+       
             <div className="relative lg:col-span-2">
               <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-base-content/50">
                 <FaSearch className="h-4 w-4" />
@@ -107,7 +99,6 @@ const RoomsPage = () => {
               )}
             </div>
 
-            {/* Floor Filter */}
             <select
               value={selectedFloor}
               onChange={(e) => setSelectedFloor(e.target.value)}
@@ -120,7 +111,6 @@ const RoomsPage = () => {
               ))}
             </select>
 
-            {/* Max Hourly Rate Filter */}
             <input
               type="number"
               placeholder="Max Rate ($/hr)"
@@ -130,7 +120,6 @@ const RoomsPage = () => {
             />
           </div>
 
-          {/* Filter Status Counter & Reset */}
           <div className="mt-3 flex items-center justify-between px-1 text-xs text-base-content/70">
             <span>
               Showing{" "}
@@ -150,20 +139,18 @@ const RoomsPage = () => {
           </div>
         </div>
 
-        {/* Loading Spinner */}
         {loading ? (
           <div className="flex h-64 items-center justify-center">
             <span className="loading loading-spinner loading-lg text-primary" />
           </div>
         ) : filteredRooms.length > 0 ? (
-          /* Cards Grid */
+
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {filteredRooms.map((room) => (
               <AllRooms key={room._id} room={room} />
             ))}
           </div>
         ) : (
-          /* Empty State */
           <div className="rounded-2xl border border-dashed border-base-300 py-16 text-center">
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-base-200 text-base-content/50">
               <FaFilter className="h-5 w-5" />
