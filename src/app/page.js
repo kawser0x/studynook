@@ -1,9 +1,9 @@
-import AddRoomPage from "./add-room/page";
+import Hero from "@/components/Hero";
 
 export default function Home() {
   return (
     <div className="">
-      Home Page Layout
+      <Hero />
     </div>
   );
 }
