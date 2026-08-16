@@ -18,17 +18,14 @@ const RoomsPage = () => {
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Filter States
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedAmenities, setSelectedAmenities] = useState([]);
   const [selectedFloor, setSelectedFloor] = useState("all");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
 
-  // Available floors for dropdown
   const [availableFloors, setAvailableFloors] = useState([]);
 
-  // Fetch rooms using query params
   const fetchRooms = useCallback(async () => {
     setLoading(true);
     try {
@@ -50,7 +47,6 @@ const RoomsPage = () => {
       const loadedRooms = Array.isArray(data) ? data : [];
       setRooms(loadedRooms);
 
-      // Populate floor dropdown from unfiltered list initially
       if (availableFloors.length === 0 && loadedRooms.length > 0) {
         const floors = Array.from(
           new Set(loadedRooms.map((r) => r.floor).filter(Boolean)),
@@ -64,7 +60,6 @@ const RoomsPage = () => {
     }
   }, [searchTerm, selectedAmenities, selectedFloor, minPrice, maxPrice]);
 
-  // Debounced API call on filter changes
   useEffect(() => {
     const timer = setTimeout(() => {
       fetchRooms();
@@ -73,7 +68,6 @@ const RoomsPage = () => {
     return () => clearTimeout(timer);
   }, [fetchRooms]);
 
-  // Handle Amenity Checkbox Toggles
   const handleAmenityChange = (amenity) => {
     setSelectedAmenities((prev) =>
       prev.includes(amenity)
@@ -102,7 +96,7 @@ const RoomsPage = () => {
   return (
     <div className="min-h-screen bg-base-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        {/* Header */}
+
         <div className="mb-6">
           <h1 className="text-3xl font-bold tracking-tight text-base-content sm:text-4xl">
             Available Study Rooms
@@ -111,11 +105,9 @@ const RoomsPage = () => {
             Search by room name, filter by amenities, price range, or floor.
           </p>
         </div>
-
-        {/* Filter Control Box */}
         <div className="mb-8 rounded-2xl border border-base-300 bg-base-200/50 p-5 shadow-sm backdrop-blur-sm">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {/* Search by Name ($regex) */}
+       
             <div className="relative lg:col-span-2">
               <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-base-content/50">
                 <FaSearch className="h-4 w-4" />
@@ -137,7 +129,6 @@ const RoomsPage = () => {
               )}
             </div>
 
-            {/* Floor Select */}
             <select
               value={selectedFloor}
               onChange={(e) => setSelectedFloor(e.target.value)}
@@ -150,7 +141,6 @@ const RoomsPage = () => {
               ))}
             </select>
 
-            {/* Price Range ($gte, $lte) */}
             <div className="flex gap-2">
               <input
                 type="number"
@@ -171,7 +161,6 @@ const RoomsPage = () => {
             </div>
           </div>
 
-          {/* Amenity Checkboxes ($in filter) */}
           <div className="mt-4 border-t border-base-300 pt-4">
             <span className="text-xs font-semibold uppercase tracking-wider text-base-content/70">
               Filter by Amenities ($in)
@@ -200,7 +189,6 @@ const RoomsPage = () => {
             </div>
           </div>
 
-          {/* Status Counter & Clear Actions */}
           <div className="mt-4 flex items-center justify-between border-t border-base-300 pt-3 text-xs text-base-content/70">
             <span>
               Found{" "}
@@ -218,7 +206,6 @@ const RoomsPage = () => {
           </div>
         </div>
 
-        {/* Content Area */}
         {loading ? (
           <div className="flex h-64 items-center justify-center">
             <span className="loading loading-spinner loading-lg text-primary" />

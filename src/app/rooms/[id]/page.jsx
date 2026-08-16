@@ -1,3 +1,4 @@
+import EditRoomPage from "@/app/editroom/page";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -175,11 +176,7 @@ const RoomDetails = async ({ params }) => {
                   Book Now
                 </Link>
 
-                <Link
-                  href={`/rooms/${id}/edit`}
-                  className="btn btn-neutral w-full gap-2 text-white">
-                  <FaEdit className="h-3 w-3" /> Edit Room Details
-                </Link>
+                <EditRoomPage room={room} />
 
                 <p className="text-center text-[11px] text-base-content/60">
                   Free cancellation up to 1 hour before reservation

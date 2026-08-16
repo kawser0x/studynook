@@ -59,7 +59,7 @@ const AllRooms = ({ room }) => {
             {visibleAmenities.map((amenity, index) => (
               <span
                 key={index}
-                className="badge badge-outline badge-accent text-[11px] py-2 px-2">
+                className="badge badge-outline  text-[11px] py-2 px-2">
                 {amenity}
               </span>
             ))}
