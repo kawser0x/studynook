@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
@@ -6,13 +5,14 @@ import AllRooms from "@/components/AllRooms";
 import { FaSearch, FaTimes, FaFilter, FaRedo } from "react-icons/fa";
 
 const AVAILABLE_AMENITIES = [
+  "Warm Reading Lamps",
+  "Silent Zone",
+  "Padded Seating",
+  "USB-C Fast Charging",
   "Wi-Fi",
-  "Whiteboard",
-  "Power Outlets",
-  "AC",
-  "Monitor",
-  "Soundproof",
-  "Projector",
+  "Mic System",
+  "High-Speed Wi-Fi",
+  "Water Cooler",
 ];
 
 const RoomsClient = () => {
@@ -47,9 +47,7 @@ const RoomsClient = () => {
         return;
       }
 
-      const res = await fetch(
-        `${backendUrl}/rooms?${params.toString()}`,
-      );
+      const res = await fetch(`${backendUrl}/rooms?${params.toString()}`);
       const data = await res.json();
       const loadedRooms = Array.isArray(data) ? data : [];
       setRooms(loadedRooms);

@@ -181,7 +181,7 @@ const Navbar = () => {
             <>
               <Link
                 href="/signin"
-                className="btn btn-primary btn-xs font-medium text-base-content  sm:inline-flex sm:btn-sm">
+                className="btn btn-primary btn-xs font-medium text-white  sm:inline-flex sm:btn-sm">
                 Sign In
               </Link>
               <Link

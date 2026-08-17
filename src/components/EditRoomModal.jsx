@@ -1,10 +1,11 @@
 "use client";
 
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { FaEdit } from "react-icons/fa";
-
+import { authClient } from "@/lib/auth-client";
 
 const EditRoomModal = ({ room = {} }) => {
   const router = useRouter();
@@ -14,6 +15,7 @@ const EditRoomModal = ({ room = {} }) => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
@@ -29,6 +31,22 @@ const EditRoomModal = ({ room = {} }) => {
     },
   });
 
+  useEffect(() => {
+    if (room && room._id) {
+      reset({
+        name: room?.name || "",
+        image: room?.image || "",
+        shortDescription: room?.shortDescription || "",
+        floor: room?.floor || "",
+        seatCapacity: room?.seatCapacity || "",
+        hourlyRate: room?.hourlyRate || "",
+        amenities: Array.isArray(room?.amenities)
+          ? room.amenities.join(", ")
+          : "",
+      });
+    }
+  }, [room, reset]);
+
   const onSubmit = async (data) => {
     if (!room?._id) {
       toast.error("Room ID is missing!");
@@ -39,10 +57,12 @@ const EditRoomModal = ({ room = {} }) => {
       const formattedData = {
         ...data,
         hourlyRate: Number(data.hourlyRate),
-        amenities: data.amenities
-          .split(",")
-          .map((item) => item.trim())
-          .filter((item) => item.length > 0),
+        amenities: typeof data.amenities === "string"
+          ? data.amenities
+              .split(",")
+              .map((item) => item.trim())
+              .filter((item) => item.length > 0)
+          : data.amenities,
       };
 
       const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -61,13 +81,16 @@ const EditRoomModal = ({ room = {} }) => {
         body: JSON.stringify(formattedData),
       });
 
-      if (!res.ok) throw new Error("Failed to update");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to update room details");
+      }
 
       toast.success("Room updated successfully!");
       document.getElementById(modalId)?.close();
       router.refresh();
     } catch (error) {
-      toast.error("Failed to update room details");
+      toast.error(error.message || "Failed to update room details");
     }
   };
 
