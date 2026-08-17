@@ -8,14 +8,20 @@ import { auth } from "@/lib/auth";
 export async function generateMetadata({ params }) {
   const { id } = await params;
   try {
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-    if (backendUrl && id) {
-      const res = await fetch(`${backendUrl}/rooms/${id}`, { cache: "no-store" });
+    const backendUrl =
+      process.env.NEXT_PUBLIC_BACKEND_URL ||
+      "https://studynook-server-pearl.vercel.app";
+    if (id) {
+      const res = await fetch(`${backendUrl}/rooms/${id}`, {
+        cache: "no-store",
+      });
       if (res.ok) {
         const room = await res.json();
         return {
           title: room?.name ? `${room.name} - Room Details` : "Room Details",
-          description: room?.shortDescription || "View details and reserve this quiet study space.",
+          description:
+            room?.shortDescription ||
+            "View details and reserve this quiet study space.",
         };
       }
     }
@@ -38,12 +44,13 @@ const RoomDetails = async ({ params }) => {
     });
     token = authRes?.token;
   } catch (e) {
-    // Unauthenticated user viewing room details
   }
 
   try {
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-    if (backendUrl && id) {
+    const backendUrl =
+      process.env.NEXT_PUBLIC_BACKEND_URL ||
+      "https://studynook-server-pearl.vercel.app";
+    if (id) {
       const headersObj = {};
       if (token) {
         headersObj.authorization = `Bearer ${token}`;
@@ -51,7 +58,6 @@ const RoomDetails = async ({ params }) => {
 
       const res = await fetch(`${backendUrl}/rooms/${id}`, {
         headers: headersObj,
-        cache: "no-store",
       });
       if (res.ok) {
         room = await res.json();
@@ -60,7 +66,6 @@ const RoomDetails = async ({ params }) => {
   } catch (error) {
     console.error("Error fetching room details:", error);
   }
-
 
   if (!room) {
     return (

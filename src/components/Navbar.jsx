@@ -12,7 +12,6 @@ const Navbar = () => {
   const pathname = usePathname();
   const router = useRouter();
 
-  // Better Auth Session Hook
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
 

@@ -30,11 +30,9 @@ const MyBookingClient = () => {
         return;
       }
       try {
-        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-        if (!backendUrl) {
-          setLoading(false);
-          return;
-        }
+        const backendUrl =
+          process.env.NEXT_PUBLIC_BACKEND_URL ||
+          "https://studynook-server-pearl.vercel.app";
         const res = await fetch(`${backendUrl}/my-bookings`, {
           headers: {
             "user-email": userEmail,
@@ -75,7 +73,9 @@ const MyBookingClient = () => {
 
     try {
       const token = await getAuthToken();
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+      const backendUrl =
+        process.env.NEXT_PUBLIC_BACKEND_URL ||
+        "https://studynook-server-pearl.vercel.app";
       const res = await fetch(
         `${backendUrl}/bookings/${selectedBooking._id}`,
         {

@@ -81,11 +81,9 @@ const BookRoomModal = ({ room }) => {
         specialNote: data.specialNote,
       };
 
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-      if (!backendUrl) {
-        toast.error("Backend URL is not configured");
-        return;
-      }
+      const backendUrl =
+        process.env.NEXT_PUBLIC_BACKEND_URL ||
+        "https://studynook-server-pearl.vercel.app";
 
       const token = await getAuthToken();
 

@@ -57,19 +57,18 @@ const EditRoomModal = ({ room = {} }) => {
       const formattedData = {
         ...data,
         hourlyRate: Number(data.hourlyRate),
-        amenities: typeof data.amenities === "string"
-          ? data.amenities
-              .split(",")
-              .map((item) => item.trim())
-              .filter((item) => item.length > 0)
-          : data.amenities,
+        amenities:
+          typeof data.amenities === "string"
+            ? data.amenities
+                .split(",")
+                .map((item) => item.trim())
+                .filter((item) => item.length > 0)
+            : data.amenities,
       };
 
-      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-      if (!backendUrl) {
-        toast.error("Backend URL is not configured");
-        return;
-      }
+      const backendUrl =
+        process.env.NEXT_PUBLIC_BACKEND_URL ||
+        "https://studynook-server-pearl.vercel.app";
       const token = await getAuthToken();
 
       const res = await fetch(`${backendUrl}/rooms/${room._id}`, {
