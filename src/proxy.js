@@ -15,8 +15,11 @@ export function proxy(request) {
   return NextResponse.next();
 }
 
+export default proxy;
+
 export const config = {
-  matcher: ["/add-room", "/my-booking",'/rooms/:path'],
+  matcher: ["/add-room", "/my-booking"],
 };
+
 
 

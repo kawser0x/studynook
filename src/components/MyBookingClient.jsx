@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "react-toastify";
-import { authClient } from "@/lib/auth-client";
+import { authClient, getAuthToken } from "@/lib/auth-client";
 import {
   FaCalendarAlt,
   FaBan,
@@ -24,7 +24,7 @@ const MyBookingClient = () => {
 
   const fetchBookings = useCallback(
     async (signal) => {
-      const { data: tokenData } = await authClient.token();
+      const token = await getAuthToken();
       if (!userEmail) {
         setLoading(false);
         return;
@@ -38,7 +38,7 @@ const MyBookingClient = () => {
         const res = await fetch(`${backendUrl}/my-bookings`, {
           headers: {
             "user-email": userEmail,
-            ...(tokenData?.token ? { authorization: `Bearer ${tokenData.token}` } : {}),
+            ...(token ? { authorization: `Bearer ${token}` } : {}),
           },
           signal,
         });
@@ -74,7 +74,7 @@ const MyBookingClient = () => {
     setIsCancelling(true);
 
     try {
-      const { data: tokenData } = await authClient.token();
+      const token = await getAuthToken();
       const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
       const res = await fetch(
         `${backendUrl}/bookings/${selectedBooking._id}`,
@@ -82,7 +82,7 @@ const MyBookingClient = () => {
           method: "DELETE",
           headers: {
             "user-email": userEmail || "",
-            ...(tokenData?.token ? { authorization: `Bearer ${tokenData.token}` } : {}),
+            ...(token ? { authorization: `Bearer ${token}` } : {}),
           },
         },
       );

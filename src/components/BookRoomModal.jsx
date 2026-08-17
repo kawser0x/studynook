@@ -87,13 +87,13 @@ const BookRoomModal = ({ room }) => {
         return;
       }
 
-      const { data: tokenData } = await authClient.token();
+      const token = await getAuthToken();
 
       const res = await fetch(`${backendUrl}/bookings`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(tokenData?.token ? { authorization: `Bearer ${tokenData.token}` } : {}),
+          ...(token ? { authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify(payload),
       });

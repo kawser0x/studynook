@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { authClient } from "@/lib/auth-client";
+import { authClient, getAuthToken } from "@/lib/auth-client";
 import {
   FaLayerGroup,
   FaUserFriends,
@@ -34,14 +34,14 @@ const RoomActionCard = ({ room }) => {
         toast.error("Backend URL is not configured");
         return;
       }
-      const { data: tokenData } = await authClient.token();
+      const token = await getAuthToken();
 
       const res = await fetch(`${backendUrl}/rooms/${room._id}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
           "user-email": currentUser?.email || "",
-          ...(tokenData?.token ? { authorization: `Bearer ${tokenData.token}` } : {}),
+          ...(token ? { authorization: `Bearer ${token}` } : {}),
         },
       });
 

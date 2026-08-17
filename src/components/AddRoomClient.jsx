@@ -1,6 +1,6 @@
 "use client";
 
-import { authClient } from "@/lib/auth-client";
+import { authClient, getAuthToken } from "@/lib/auth-client";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
@@ -24,7 +24,7 @@ const AddRoomClient = () => {
           .filter((item) => item.length > 0),
       };
 
-      const { data: tokenData } = await authClient.token();
+      const token = await getAuthToken();
       const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
       if (!backendUrl) {
         toast.error("Backend URL is not configured");
@@ -35,7 +35,7 @@ const AddRoomClient = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(tokenData?.token ? { authorization: `Bearer ${tokenData.token}` } : {}),
+          ...(token ? { authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify(formattedData),
       });

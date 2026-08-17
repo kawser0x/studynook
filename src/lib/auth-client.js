@@ -9,3 +9,20 @@ export const authClient = createAuthClient({
   plugins: [jwtClient()],
 });
 
+export async function getAuthToken() {
+  try {
+    const res = await fetch("/api/auth/token", {
+      headers: { "Content-Type": "application/json" },
+      cache: "no-store",
+    });
+    if (res.ok) {
+      const data = await res.json();
+      return data?.token || null;
+    }
+  } catch (e) {
+    console.error("Failed to fetch auth token:", e);
+  }
+  return null;
+}
+
+
