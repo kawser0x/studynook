@@ -53,7 +53,6 @@ const BookRoomModal = ({ room }) => {
   const selectedStartTime = watch("startTime");
   const selectedEndTime = watch("endTime");
 
-  // Filter end time slots to ensure minimum 1 hour booking
   const availableEndTimes = useMemo(() => {
     const startHour = parseInt(selectedStartTime?.split(":")[0] || "8", 10);
     return TIME_SLOTS.filter((time) => {
@@ -62,7 +61,6 @@ const BookRoomModal = ({ room }) => {
     });
   }, [selectedStartTime]);
 
-  // Compute total cost in real-time
   const totalCost = useMemo(() => {
     const startHour = parseInt(selectedStartTime?.split(":")[0] || "0", 10);
     const endHour = parseInt(selectedEndTime?.split(":")[0] || "0", 10);

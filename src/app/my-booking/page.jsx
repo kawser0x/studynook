@@ -23,6 +23,7 @@ const MYBookingPage = () => {
 
   const fetchBookings = useCallback(
     async (signal) => {
+      const { data: tokenData } = await authClient.token();
       if (!userEmail) {
         setLoading(false);
         return;
@@ -33,7 +34,7 @@ const MYBookingPage = () => {
           `${process.env.NEXT_PUBLIC_BACKEND_URL}/my-bookings`,
           {
             headers: { "user-email": userEmail },
-            cache: "no-store",
+            
             signal,
           },
         );
@@ -59,7 +60,6 @@ const MYBookingPage = () => {
     return () => controller.abort();
   }, [sessionLoading, fetchBookings]);
 
-  // Optimistic UI cancellation
   const handleCancelBooking = async () => {
     if (!selectedBooking) return;
     setIsCancelling(true);
@@ -70,11 +70,11 @@ const MYBookingPage = () => {
         {
           method: "DELETE",
           headers: { "user-email": userEmail || "" },
+          authorization: `bearer ${tokenData?.token}`,
         },
       );
       if (!res.ok) throw new Error("Failed to delete booking");
 
-      // Remove the item completely from state
       setBookings((prev) => prev.filter((b) => b._id !== selectedBooking._id));
 
       toast.success("Booking deleted successfully");

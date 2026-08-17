@@ -1,5 +1,6 @@
 "use client";
 
+import { authClient } from "@/lib/auth-client";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 
@@ -22,10 +23,13 @@ const AddRoomPage = () => {
           .filter((item) => item.length > 0),
       };
 
+      const {data:tokenData} = await authClient.token()
+
       const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/rooms`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          authorization: `bearer ${tokenData?.token}`
         },
         body: JSON.stringify(formattedData),
       });

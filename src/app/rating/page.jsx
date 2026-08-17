@@ -56,14 +56,12 @@ const RatingPage = () => {
           </p>
         </div>
 
-        {/* Reviews Grid */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {reviews.map((review) => (
             <div
               key={review.id}
               className="card border border-base-300 bg-base-100 p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md justify-between">
               <div>
-                {/* Quote Icon & Star Rating */}
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex gap-1 text-warning">
                     {[...Array(5)].map((_, i) => (
@@ -78,13 +76,11 @@ const RatingPage = () => {
                   <FaQuoteLeft className="text-base-content/20 text-lg" />
                 </div>
 
-                {/* Feedback Comment */}
                 <p className="text-sm text-base-content/80 leading-relaxed italic">
                   "{review.comment}"
                 </p>
               </div>
 
-              {/* User Details */}
               <div className="mt-6 flex items-center gap-3 border-t border-base-300/60 pt-4">
                 <div className="relative h-10 w-10 overflow-hidden rounded-full border border-primary/20">
                   <Image

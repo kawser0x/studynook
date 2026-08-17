@@ -11,7 +11,7 @@ const Footer = () => {
     <footer className="border-t border-base-300 bg-base-200/50 text-base-content">
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3 lg:grid-cols-4">
-          {/* Brand & Short Info */}
+      
           <div className="space-y-3 md:col-span-1 lg:col-span-1">
             <Link
               href="/"
@@ -33,7 +33,6 @@ const Footer = () => {
             </p>
           </div>
 
-          {/* Useful Links */}
           <div className="space-y-3">
             <h3 className="text-sm font-semibold uppercase tracking-wider text-base-content">
               Useful Links
@@ -61,7 +60,6 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Contact Information */}
           <div className="space-y-3">
             <h3 className="text-sm font-semibold uppercase tracking-wider text-base-content">
               Contact Us

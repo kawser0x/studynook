@@ -31,7 +31,6 @@ const SignUpPage = () => {
 
   const password = watch("password");
 
-  // Email/Password Registration
   const onSubmit = async (data) => {
     await authClient.signUp.email(
       {
@@ -53,7 +52,6 @@ const SignUpPage = () => {
     );
   };
 
-  // Google Social Sign Up
   const handleGoogleSignUp = async () => {
     await authClient.signIn.social({
       provider: "google",
@@ -65,7 +63,7 @@ const SignUpPage = () => {
     <div className="flex min-h-[calc(100vh-80px)] items-center justify-center bg-base-100 px-4 py-12 sm:px-6 lg:px-8">
       <div className="card w-full max-w-md border border-base-300 bg-base-200/50 shadow-xl backdrop-blur-sm">
         <div className="card-body p-6 sm:p-8">
-          {/* Header & Logo */}
+  
           <div className="text-center">
             <Link
               href="/"
@@ -80,7 +78,6 @@ const SignUpPage = () => {
             </p>
           </div>
 
-          {/* Social Sign-Up */}
           <div className="mt-6">
             <button
               type="button"
@@ -90,14 +87,13 @@ const SignUpPage = () => {
             </button>
           </div>
 
-          {/* Divider */}
           <div className="divider text-xs uppercase text-base-content/40 my-4">
             or sign up with email
           </div>
 
-          {/* Registration Form */}
+  
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-3.5">
-            {/* Full Name */}
+ 
             <div className="form-control">
               <label className="label py-1">
                 <span className="label-text text-xs font-semibold">
@@ -130,7 +126,6 @@ const SignUpPage = () => {
               )}
             </div>
 
-            {/* Email Address */}
             <div className="form-control">
               <label className="label py-1">
                 <span className="label-text text-xs font-semibold">
@@ -163,7 +158,6 @@ const SignUpPage = () => {
               )}
             </div>
 
-            {/* Avatar URL (Optional) */}
             <div className="form-control">
               <label className="label py-1">
                 <span className="label-text text-xs font-semibold">
@@ -186,7 +180,6 @@ const SignUpPage = () => {
               </div>
             </div>
 
-            {/* Password */}
             <div className="form-control">
               <label className="label py-1">
                 <span className="label-text text-xs font-semibold">

@@ -2,15 +2,24 @@ import Image from "next/image";
 import Link from "next/link";
 import { FaArrowLeft, FaCheckCircle, FaFire } from "react-icons/fa";
 import RoomActionCard from "@/components/RoomActionCard";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
 
 const RoomDetails = async ({ params }) => {
   const { id } = await params;
-
   let room = null;
+  const {token} = await auth.api.getToken({
+    headers: await headers(),
+  });
+
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/rooms/${id}`,
-      { cache: "no-store" },
+      {
+        headers: {
+          authorization: `"breare" ${token}`,
+        },
+      },
     );
     if (res.ok) {
       room = await res.json();
@@ -119,7 +128,7 @@ const RoomDetails = async ({ params }) => {
           </div>
 
           <div className="lg:col-span-1">
-            <RoomActionCard room = {room}/>
+            <RoomActionCard room={room} />
           </div>
         </div>
       </div>
