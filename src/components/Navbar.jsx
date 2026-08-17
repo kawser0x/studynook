@@ -57,7 +57,6 @@ const Navbar = () => {
         );
       })}
 
-      {/* Mobile-Only Auth Links when logged out */}
       {!session && !isPending && (
         <li className="sm:hidden border-t border-base-300 pt-1 mt-1">
           <Link
@@ -78,7 +77,7 @@ const Navbar = () => {
     <div className="sticky top-0 z-50 border-b border-base-300 bg-base-100/90 backdrop-blur-md">
       <div className="navbar mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
         <div className="navbar-start gap-1">
-          {/* Mobile Menu Dropdown */}
+      
           <div className="dropdown">
             <div
               tabIndex={0}
@@ -105,7 +104,7 @@ const Navbar = () => {
             </ul>
           </div>
 
-          {/* Logo */}
+       
           <Link
             href="/"
             className="flex items-center gap-1.5 px-1 py-1 text-base font-bold tracking-tight text-primary sm:text-xl">
@@ -116,19 +115,17 @@ const Navbar = () => {
           </Link>
         </div>
 
-        {/* Desktop Navigation */}
         <div className="navbar-center hidden lg:flex">
           <ul className="menu menu-horizontal gap-1 px-1 text-sm">
             {navLinks}
           </ul>
         </div>
 
-        {/* Auth State & Theme Switcher */}
         <div className="navbar-end gap-1.5 sm:gap-2">
           {isPending ? (
             <span className="loading loading-spinner loading-sm text-primary" />
           ) : user ? (
-            /* Logged In User Profile & Logout */
+
             <div className="dropdown dropdown-end">
               <div
                 tabIndex={0}

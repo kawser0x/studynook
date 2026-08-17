@@ -8,17 +8,14 @@ const HomeRoomPage = async () => {
   let rooms = [];
 
   try {
-    const backendUrl =
-      process.env.NEXT_PUBLIC_BACKEND_URL ||
-      "https://studynook-server-pearl.vercel.app";
-    const res = await fetch(`${backendUrl}/rooms`, {
-      cache: "no-store",
-    });
-    if (res.ok) {
-      rooms = await res.json();
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    if (backendUrl) {
+      const res = await fetch(`${backendUrl}/rooms`,);
+      if (res.ok) {
+        rooms = await res.json();
+      }
     }
   } catch (error) {
-    console.error("Error fetching home rooms:", error);
   }
 
   const latestRooms = Array.isArray(rooms) ? rooms.slice(0, 6) : [];

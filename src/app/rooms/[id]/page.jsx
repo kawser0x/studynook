@@ -10,24 +10,19 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }) {
   const { id } = await params;
   try {
-    const backendUrl =
-      process.env.NEXT_PUBLIC_BACKEND_URL ||
-      "https://studynook-server-pearl.vercel.app";
-    if (id) {
-      const res = await fetch(`${backendUrl}/rooms/${id}`, {
-        cache: "no-store",
-      });
-      if (res.ok) {
-        const room = await res.json();
-        return {
-          title: room?.name ? `${room.name} - Room Details` : "Room Details",
-          description:
-            room?.shortDescription ||
-            "View details and reserve this quiet study space.",
-        };
-      }
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/rooms/${id}`);
+    if (res.ok) {
+      const room = await res.json();
+      return {
+        title: room?.name ? `${room.name} - Room Details` : "Room Details",
+        description:
+          room?.shortDescription ||
+          "View details and reserve this quiet study space.",
+      };
     }
-  } catch (e) {}
+  } catch (e) {
+    console.error("Metadata fetch error:", e);
+  }
 
   return {
     title: "Room Details",
@@ -49,10 +44,8 @@ const RoomDetails = async ({ params }) => {
   }
 
   try {
-    const backendUrl =
-      process.env.NEXT_PUBLIC_BACKEND_URL ||
-      "https://studynook-server-pearl.vercel.app";
-    if (id) {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    if (backendUrl && id) {
       const headersObj = {};
       if (token) {
         headersObj.authorization = `Bearer ${token}`;
@@ -66,7 +59,6 @@ const RoomDetails = async ({ params }) => {
       }
     }
   } catch (error) {
-    console.error("Error fetching room details:", error);
   }
 
   if (!room) {

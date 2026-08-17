@@ -29,9 +29,12 @@ const RoomActionCard = ({ room }) => {
   const handleDeleteRoom = async () => {
     setIsDeleting(true);
     try {
-      const backendUrl =
-        process.env.NEXT_PUBLIC_BACKEND_URL ||
-        "https://studynook-server-pearl.vercel.app";
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+      if (!backendUrl) {
+        toast.error("Backend URL is not configured");
+        setIsDeleting(false);
+        return;
+      }
       const token = await getAuthToken();
 
       const res = await fetch(`${backendUrl}/rooms/${room._id}`, {

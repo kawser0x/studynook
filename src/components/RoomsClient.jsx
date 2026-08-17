@@ -40,9 +40,12 @@ const RoomsClient = () => {
         params.append("amenities", selectedAmenities.join(","));
       }
 
-      const backendUrl =
-        process.env.NEXT_PUBLIC_BACKEND_URL ||
-        "https://studynook-server-pearl.vercel.app";
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+      if (!backendUrl) {
+        setRooms([]);
+        setLoading(false);
+        return;
+      }
 
       const res = await fetch(`${backendUrl}/rooms?${params.toString()}`);
       const data = await res.json();

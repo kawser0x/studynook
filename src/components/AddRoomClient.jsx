@@ -25,9 +25,11 @@ const AddRoomClient = () => {
       };
 
       const token = await getAuthToken();
-      const backendUrl =
-        process.env.NEXT_PUBLIC_BACKEND_URL ||
-        "https://studynook-server-pearl.vercel.app";
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+      if (!backendUrl) {
+        toast.error("Backend URL is not configured");
+        return;
+      }
 
       const res = await fetch(`${backendUrl}/rooms`, {
         method: "POST",
