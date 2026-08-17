@@ -1,15 +1,7 @@
-import EditRoomPage from "@/app/editroom/page";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  FaLayerGroup,
-  FaUserFriends,
-  FaArrowLeft,
-  FaCheckCircle,
-  FaCalendarAlt,
-  FaEdit,
-} from "react-icons/fa";
-import { toast } from "react-toastify";
+import { FaArrowLeft, FaCheckCircle, FaFire } from "react-icons/fa";
+import RoomActionCard from "@/components/RoomActionCard";
 
 const RoomDetails = async ({ params }) => {
   const { id } = await params;
@@ -18,15 +10,13 @@ const RoomDetails = async ({ params }) => {
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/rooms/${id}`,
-      {
-        cache: "no-store",
-      },
+      { cache: "no-store" },
     );
     if (res.ok) {
       room = await res.json();
     }
   } catch (error) {
-    toast("Error fetching room details:", error)
+    console.error("Error fetching room details:", error);
   }
 
   if (!room) {
@@ -50,7 +40,7 @@ const RoomDetails = async ({ params }) => {
     shortDescription,
     floor,
     seatCapacity,
-    hourlyRate,
+    bookingCount = 0,
     amenities = [],
   } = room;
 
@@ -62,12 +52,6 @@ const RoomDetails = async ({ params }) => {
             href="/rooms"
             className="inline-flex items-center gap-2 text-sm font-medium text-base-content/70 hover:text-primary transition-colors">
             <FaArrowLeft className="h-3 w-3" /> Back to Rooms
-          </Link>
-
-          <Link
-            href={`/rooms/${id}/edit`}
-            className="btn btn-outline btn-sm gap-2 hover:bg-primary hover:text-white">
-            <FaEdit className="h-3.5 w-3.5" /> Edit Room
           </Link>
         </div>
 
@@ -95,6 +79,12 @@ const RoomDetails = async ({ params }) => {
                 <span className="badge badge-ghost text-xs">
                   Capacity: {seatCapacity}
                 </span>
+                {bookingCount > 0 && (
+                  <span className="badge badge-warning gap-1 text-xs font-semibold">
+                    <FaFire className="h-3 w-3" /> Booked {bookingCount}{" "}
+                    {bookingCount === 1 ? "time" : "times"}
+                  </span>
+                )}
               </div>
 
               <h1 className="mt-2 text-3xl font-extrabold text-base-content sm:text-4xl">
@@ -129,60 +119,7 @@ const RoomDetails = async ({ params }) => {
           </div>
 
           <div className="lg:col-span-1">
-            <div className="sticky top-24 rounded-2xl border border-base-300 bg-base-100 p-6 shadow-xl">
-              <div className="flex items-baseline justify-between border-b border-base-300 pb-4">
-                <div>
-                  <span className="text-3xl font-extrabold text-primary">
-                    ${hourlyRate}
-                  </span>
-                  <span className="text-sm text-base-content/60"> / hour</span>
-                </div>
-                <div className="badge badge-success badge-sm text-white">
-                  Available
-                </div>
-              </div>
-
-              <div className="space-y-3 py-5 text-xs text-base-content/70">
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-2">
-                    <FaLayerGroup className="text-primary" /> Location
-                  </span>
-                  <span className="font-semibold text-base-content">
-                    {floor}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-2">
-                    <FaUserFriends className="text-primary" /> Capacity
-                  </span>
-                  <span className="font-semibold text-base-content">
-                    {seatCapacity}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-2">
-                    <FaCalendarAlt className="text-primary" /> Access
-                  </span>
-                  <span className="font-semibold text-base-content">
-                    Instant Booking
-                  </span>
-                </div>
-              </div>
-
-              <div className="space-y-2.5 pt-2">
-                <Link
-                  href={`/rooms/${id}/book`}
-                  className="btn btn-primary w-full text-white shadow-md shadow-primary/20 hover:brightness-105">
-                  Book Now
-                </Link>
-
-                <EditRoomPage room={room} />
-
-                <p className="text-center text-[11px] text-base-content/60">
-                  Free cancellation up to 1 hour before reservation
-                </p>
-              </div>
-            </div>
+            <RoomActionCard room = {room}/>
           </div>
         </div>
       </div>

@@ -25,7 +25,6 @@ const SignInPage = () => {
     formState: { errors, isSubmitting },
   } = useForm();
 
-  // Email/Password Login
   const onSubmit = async (data) => {
     await authClient.signIn.email(
       {
@@ -45,7 +44,6 @@ const SignInPage = () => {
     );
   };
 
-  // Google Social Login
   const handleGoogleSignIn = async () => {
     await authClient.signIn.social({
       provider: "google",
@@ -57,7 +55,6 @@ const SignInPage = () => {
     <div className="flex min-h-[calc(100vh-80px)] items-center justify-center bg-base-100 px-4 py-12 sm:px-6 lg:px-8">
       <div className="card w-full max-w-md border border-base-300 bg-base-200/50 shadow-xl backdrop-blur-sm">
         <div className="card-body p-6 sm:p-8">
-          {/* Header & Logo */}
           <div className="text-center">
             <Link
               href="/"
@@ -72,7 +69,6 @@ const SignInPage = () => {
             </p>
           </div>
 
-          {/* Social Sign-In */}
           <div className="mt-6">
             <button
               type="button"
@@ -82,14 +78,12 @@ const SignInPage = () => {
             </button>
           </div>
 
-          {/* Divider */}
           <div className="divider text-xs uppercase text-base-content/40 my-4">
             or sign in with email
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {/* Email Field */}
+         
             <div className="form-control">
               <label className="label py-1">
                 <span className="label-text text-xs font-semibold">
@@ -122,7 +116,6 @@ const SignInPage = () => {
               )}
             </div>
 
-            {/* Password Field */}
             <div className="form-control">
               <div className="flex items-center justify-between">
                 <label className="label py-1">

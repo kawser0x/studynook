@@ -157,7 +157,6 @@ const Navbar = () => {
                 </span>
               </div>
 
-              {/* User Dropdown Menu */}
               <ul
                 tabIndex={0}
                 className="menu menu-sm dropdown-content z-[1] mt-3 w-56 rounded-box border border-base-300 bg-base-100 p-2 shadow-lg">
@@ -168,12 +167,6 @@ const Navbar = () => {
                   <span className="text-[11px] font-normal text-base-content/60 truncate">
                     {user.email}
                   </span>
-                </li>
-                <li>
-                  <Link href="/my-booking">My Bookings</Link>
-                </li>
-                <li>
-                  <Link href="/add-room">List a Space</Link>
                 </li>
                 <li className="border-t border-base-300 mt-1 pt-1">
                   <button

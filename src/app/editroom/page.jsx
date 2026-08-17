@@ -44,7 +44,7 @@ const EditRoomPage = ({ room }) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(formattedData),
-        }
+        },
       );
 
       toast.success("Room updated successfully!");
@@ -60,8 +60,7 @@ const EditRoomPage = ({ room }) => {
       <button
         type="button"
         onClick={() => document.getElementById(modalId)?.showModal()}
-        className="btn btn-neutral w-full text-white gap-2 "
-      >
+        className="btn btn-neutral w-full text-white gap-2 ">
         <FaEdit className="h-3 w-3 " /> Edit Room Details
       </button>
 
@@ -75,10 +74,11 @@ const EditRoomPage = ({ room }) => {
           </p>
 
           <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-3">
-     
             <div className="form-control">
               <label className="label py-1">
-                <span className="label-text text-xs font-semibold">Room Name</span>
+                <span className="label-text text-xs font-semibold">
+                  Room Name
+                </span>
               </label>
               <input
                 type="text"
@@ -89,7 +89,9 @@ const EditRoomPage = ({ room }) => {
 
             <div className="form-control">
               <label className="label py-1">
-                <span className="label-text text-xs font-semibold">Image URL</span>
+                <span className="label-text text-xs font-semibold">
+                  Image URL
+                </span>
               </label>
               <input
                 type="url"
@@ -100,19 +102,25 @@ const EditRoomPage = ({ room }) => {
 
             <div className="form-control">
               <label className="label py-1">
-                <span className="label-text text-xs font-semibold">Short Description</span>
+                <span className="label-text text-xs font-semibold">
+                  Short Description
+                </span>
               </label>
               <textarea
                 rows="2"
                 maxLength={120}
                 className="textarea textarea-bordered textarea-sm w-full"
-                {...register("shortDescription", { required: "Description is required" })}
+                {...register("shortDescription", {
+                  required: "Description is required",
+                })}
               />
             </div>
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
               <div className="form-control">
                 <label className="label py-1">
-                  <span className="label-text text-xs font-semibold">Floor</span>
+                  <span className="label-text text-xs font-semibold">
+                    Floor
+                  </span>
                 </label>
                 <input
                   type="text"
@@ -123,7 +131,9 @@ const EditRoomPage = ({ room }) => {
 
               <div className="form-control">
                 <label className="label py-1">
-                  <span className="label-text text-xs font-semibold">Seat Capacity</span>
+                  <span className="label-text text-xs font-semibold">
+                    Seat Capacity
+                  </span>
                 </label>
                 <input
                   type="text"
@@ -134,7 +144,9 @@ const EditRoomPage = ({ room }) => {
 
               <div className="form-control">
                 <label className="label py-1">
-                  <span className="label-text text-xs font-semibold">Hourly Rate ($)</span>
+                  <span className="label-text text-xs font-semibold">
+                    Hourly Rate ($)
+                  </span>
                 </label>
                 <input
                   type="number"
@@ -147,12 +159,16 @@ const EditRoomPage = ({ room }) => {
 
             <div className="form-control">
               <label className="label py-1">
-                <span className="label-text text-xs font-semibold">Amenities (comma separated)</span>
+                <span className="label-text text-xs font-semibold">
+                  Amenities (comma separated)
+                </span>
               </label>
               <input
                 type="text"
                 className="input input-bordered input-sm w-full"
-                {...register("amenities", { required: "At least one amenity is required" })}
+                {...register("amenities", {
+                  required: "At least one amenity is required",
+                })}
               />
             </div>
 
@@ -160,15 +176,13 @@ const EditRoomPage = ({ room }) => {
               <button
                 type="button"
                 className="btn btn-ghost btn-sm"
-                onClick={() => document.getElementById(modalId)?.close()}
-              >
+                onClick={() => document.getElementById(modalId)?.close()}>
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="btn btn-primary btn-sm text-white"
-              >
+                className="btn btn-primary btn-sm text-white">
                 {isSubmitting ? "Saving..." : "Save Changes"}
               </button>
             </div>
