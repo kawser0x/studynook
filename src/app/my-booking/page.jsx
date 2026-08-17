@@ -19,55 +19,69 @@ const MYBookingPage = () => {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [isCancelling, setIsCancelling] = useState(false);
 
-  const fetchBookings = useCallback(async () => {
-    if (!session?.user?.email) {
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/my-bookings`,
-        {
-          headers: { "user-email": session.user.email },
-          cache: "no-store",
-        },
-      );
-      const data = await res.json();
-      setBookings(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to load your reservations");
-    } finally {
-      setLoading(false);
-    }
-  }, [session?.user?.email]);
+  const userEmail = session?.user?.email;
+
+  const fetchBookings = useCallback(
+    async (signal) => {
+      if (!userEmail) {
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/my-bookings`,
+          {
+            headers: { "user-email": userEmail },
+            cache: "no-store",
+            signal,
+          },
+        );
+        if (!res.ok) throw new Error("Failed to fetch bookings");
+        const data = await res.json();
+        setBookings(Array.isArray(data) ? data : []);
+      } catch (err) {
+        if (err.name !== "AbortError") {
+          console.error(err);
+          toast.error("Failed to load your reservations");
+        }
+      } finally {
+        setLoading(false);
+      }
+    },
+    [userEmail],
+  );
 
   useEffect(() => {
-    if (!sessionLoading) {
-      fetchBookings();
-    }
+    if (sessionLoading) return;
+    const controller = new AbortController();
+    fetchBookings(controller.signal);
+    return () => controller.abort();
   }, [sessionLoading, fetchBookings]);
 
+  // Optimistic UI cancellation
   const handleCancelBooking = async () => {
     if (!selectedBooking) return;
     setIsCancelling(true);
+
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/bookings/${selectedBooking._id}/cancel`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/bookings/${selectedBooking._id}`,
         {
-          method: "PATCH",
-          headers: { "user-email": session?.user?.email || "" },
+          method: "DELETE",
+          headers: { "user-email": userEmail || "" },
         },
       );
-      if (!res.ok) throw new Error("Failed to cancel booking");
+      if (!res.ok) throw new Error("Failed to delete booking");
 
-      toast.success("Booking cancelled successfully");
+      // Remove the item completely from state
+      setBookings((prev) => prev.filter((b) => b._id !== selectedBooking._id));
+
+      toast.success("Booking deleted successfully");
       document.getElementById("cancel_modal")?.close();
       setSelectedBooking(null);
-      fetchBookings();
     } catch (err) {
-      toast.error(err.message || "Failed to cancel reservation");
+      toast.error(err.message || "Failed to delete reservation");
     } finally {
       setIsCancelling(false);
     }
@@ -197,7 +211,6 @@ const MYBookingPage = () => {
           </div>
         )}
 
-        {/* Cancel Confirmation Modal */}
         <dialog
           id="cancel_modal"
           className="modal modal-bottom sm:modal-middle">

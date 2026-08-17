@@ -127,7 +127,7 @@ const BookRoomModal = ({ room }) => {
           </p>
 
           <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-4">
-            {/* Date Selection */}
+         
             <div className="form-control">
               <label className="label py-1">
                 <span className="label-text text-xs font-semibold">
@@ -142,7 +142,6 @@ const BookRoomModal = ({ room }) => {
               />
             </div>
 
-            {/* Time Slot Selectors */}
             <div className="grid grid-cols-2 gap-3">
               <div className="form-control">
                 <label className="label py-1">
@@ -179,7 +178,6 @@ const BookRoomModal = ({ room }) => {
               </div>
             </div>
 
-            {/* Total Cost Display */}
             <div className="rounded-lg bg-base-200/60 p-3 flex items-center justify-between">
               <span className="text-xs font-semibold flex items-center gap-1.5 text-base-content/80">
                 <FaDollarSign className="text-primary" /> Estimated Total Cost
@@ -189,7 +187,6 @@ const BookRoomModal = ({ room }) => {
               </span>
             </div>
 
-            {/* Special Note */}
             <div className="form-control">
               <label className="label py-1">
                 <span className="label-text text-xs font-semibold">
@@ -204,7 +201,6 @@ const BookRoomModal = ({ room }) => {
               />
             </div>
 
-            {/* Actions */}
             <div className="modal-action gap-2 pt-2">
               <button
                 type="button"
