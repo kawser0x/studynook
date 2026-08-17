@@ -1,6 +1,7 @@
 import Link from "next/link";
 import AllRooms from "@/components/AllRooms";
 import { FaArrowRight } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 
 
@@ -15,7 +16,7 @@ const HomeRoomPage = async () => {
       rooms = await res.json();
     }
   } catch (error) {
-    console.error("Failed to fetch featured rooms:", error);
+    toast.error("Failed to fetch featured rooms:", error)
   }
 
   const latestRooms = Array.isArray(rooms) ? rooms.slice(0, 6) : [];

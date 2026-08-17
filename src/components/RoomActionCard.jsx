@@ -14,7 +14,7 @@ import {
   FaEdit,
 } from "react-icons/fa";
 import BookRoomModal from "@/components/BookRoomModal";
-import EditRoomPage from "@/app/editroom/page";
+import EditRoomModal from "./EditRoomModal";
 
 const RoomActionCard = ({ room }) => {
   const router = useRouter();
@@ -55,7 +55,6 @@ const RoomActionCard = ({ room }) => {
 
   return (
     <div className="sticky top-24 rounded-2xl border border-base-300 bg-base-100 p-6 shadow-xl">
-      {/* Pricing Header */}
       <div className="flex items-baseline justify-between border-b border-base-300 pb-4">
         <div>
           <span className="text-3xl font-extrabold text-primary">
@@ -66,7 +65,6 @@ const RoomActionCard = ({ room }) => {
         <div className="badge badge-success badge-sm text-white">Available</div>
       </div>
 
-      {/* Room Specifications */}
       <div className="space-y-3 py-5 text-xs text-base-content/70">
         <div className="flex items-center justify-between">
           <span className="flex items-center gap-2">
@@ -92,17 +90,14 @@ const RoomActionCard = ({ room }) => {
         </div>
       </div>
 
-      {/* Dynamic Action Trigger */}
       <div className="space-y-2.5 pt-2">
         {isPending ? (
           <button disabled className="btn btn-primary w-full text-white">
             <span className="loading loading-spinner loading-sm" />
           </button>
         ) : currentUser ? (
-          /* Opens Booking Modal when logged in */
           <BookRoomModal room={room} />
         ) : (
-          /* Prompts Sign-in when logged out */
           <Link
             href={`/signin?redirect=/rooms/${room._id}`}
             className="btn btn-primary w-full text-white shadow-md shadow-primary/20 hover:brightness-105">
@@ -110,13 +105,12 @@ const RoomActionCard = ({ room }) => {
           </Link>
         )}
 
-        {/* Management Controls */}
         <div className="mt-3 space-y-2 border-t border-base-300 pt-3">
           <p className="text-center text-[11px] font-bold uppercase tracking-wider text-base-content/60">
             Room Management
           </p>
 
-          <EditRoomPage room={room} />
+          <EditRoomModal room={room} />
 
           <button
             type="button"
@@ -131,7 +125,6 @@ const RoomActionCard = ({ room }) => {
         </p>
       </div>
 
-      {/* Delete Confirmation Modal */}
       <dialog id={deleteModalId} className="modal modal-bottom sm:modal-middle">
         <div className="modal-box bg-base-100 border border-base-300">
           <h3 className="text-lg font-bold text-error">Confirm Deletion</h3>
