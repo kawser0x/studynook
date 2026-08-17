@@ -2,6 +2,8 @@ import Hero from "@/components/Hero";
 import HomeRoomPage from "./homeroom/page";
 import RatingPage from "./rating/page";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Home | StudyNook - Reserve Focus Study Rooms",
   description:

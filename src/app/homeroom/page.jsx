@@ -2,6 +2,8 @@ import Link from "next/link";
 import AllRooms from "@/components/AllRooms";
 import { FaArrowRight } from "react-icons/fa";
 
+export const dynamic = "force-dynamic";
+
 const HomeRoomPage = async () => {
   let rooms = [];
 

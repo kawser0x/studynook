@@ -5,6 +5,8 @@ import RoomActionCard from "@/components/RoomActionCard";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({ params }) {
   const { id } = await params;
   try {
