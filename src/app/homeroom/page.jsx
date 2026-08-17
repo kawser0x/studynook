@@ -3,28 +3,17 @@ import AllRooms from "@/components/AllRooms";
 import { FaArrowRight } from "react-icons/fa";
 import { toast } from "react-toastify";
 
-
-
 const HomeRoomPage = async () => {
   let rooms = [];
 
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/rooms`, {
-      
-    });
-    if (res.ok) {
-      rooms = await res.json();
-    }
-  } catch (error) {
-    toast.error("Failed to fetch featured rooms:", error)
-  }
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/rooms`);
+  rooms = await res.json();
 
   const latestRooms = Array.isArray(rooms) ? rooms.slice(0, 6) : [];
 
   return (
     <section className="py-8 px-4 sm:px-6 lg:px-8 bg-base-100">
       <div className="mx-auto max-w-7xl">
-   
         <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-8 gap-4">
           <div>
             <h2 className="text-3xl font-bold tracking-tight text-base-content sm:text-4xl">
