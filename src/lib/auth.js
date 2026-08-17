@@ -3,18 +3,31 @@ import { jwt } from "better-auth/plugins";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { MongoClient } from "mongodb";
 
-const client = new MongoClient(process.env.MONGODB_URI);
-const db = client.db("studynook");
+const uri = process.env.MONGODB_URI;
+let client;
+let db;
+
+if (uri) {
+  if (process.env.NODE_ENV === "development") {
+    if (!global._mongoClient) {
+      global._mongoClient = new MongoClient(uri);
+    }
+    client = global._mongoClient;
+  } else {
+    client = new MongoClient(uri);
+  }
+  db = client.db("studynook");
+}
 
 export const auth = betterAuth({
-  database: mongodbAdapter(db),
+  database: db ? mongodbAdapter(db) : undefined,
   emailAndPassword: {
     enabled: true,
   },
   socialProviders: {
     google: {
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
     },
   },
   session: {
@@ -25,5 +38,6 @@ export const auth = betterAuth({
   },
   plugins: [jwt()],
   secret: process.env.BETTER_AUTH_SECRET,
-  baseURL: process.env.BETTER_AUTH_URL ,
+  baseURL: process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_BETTER_AUTH_URL,
 });
+

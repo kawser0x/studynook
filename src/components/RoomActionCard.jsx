@@ -29,16 +29,21 @@ const RoomActionCard = ({ room }) => {
   const handleDeleteRoom = async () => {
     setIsDeleting(true);
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/rooms/${room._id}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            "user-email": currentUser?.email || "",
-          },
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+      if (!backendUrl) {
+        toast.error("Backend URL is not configured");
+        return;
+      }
+      const { data: tokenData } = await authClient.token();
+
+      const res = await fetch(`${backendUrl}/rooms/${room._id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "user-email": currentUser?.email || "",
+          ...(tokenData?.token ? { authorization: `Bearer ${tokenData.token}` } : {}),
         },
-      );
+      });
 
       if (!res.ok) throw new Error("Failed to delete room");
 

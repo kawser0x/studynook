@@ -81,14 +81,22 @@ const BookRoomModal = ({ room }) => {
         specialNote: data.specialNote,
       };
 
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/bookings`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+      if (!backendUrl) {
+        toast.error("Backend URL is not configured");
+        return;
+      }
+
+      const { data: tokenData } = await authClient.token();
+
+      const res = await fetch(`${backendUrl}/bookings`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(tokenData?.token ? { authorization: `Bearer ${tokenData.token}` } : {}),
         },
-      );
+        body: JSON.stringify(payload),
+      });
 
       const result = await res.json();
 

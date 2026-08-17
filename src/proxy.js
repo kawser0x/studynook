@@ -1,20 +1,16 @@
-const dns = require("node:dns");
-dns.setServers(["8.8.8.8", "8.8.4.4"]);
-
 import { NextResponse } from "next/server";
-import { auth } from "./lib/auth";
-import { headers } from "next/headers";
 
-export async function proxy(request) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+export function proxy(request) {
+  const sessionToken =
+    request.cookies.get("better-auth.session_token") ||
+    request.cookies.get("__Secure-better-auth.session_token");
 
-  if (!session) {
+  if (!sessionToken) {
     return NextResponse.redirect(new URL("/signin", request.url));
   }
 }
 
 export const config = {
-  matcher: ["/add-room", "/my-booking", "/rooms/:path"],
+  matcher: ["/add-room", "/my-booking"],
 };
+

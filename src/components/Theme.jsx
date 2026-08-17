@@ -7,10 +7,13 @@ const Theme = () => {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
     const savedTheme = localStorage.getItem("theme") || "light";
-    setTheme(savedTheme);
     document.documentElement.setAttribute("data-theme", savedTheme);
+    const timer = setTimeout(() => {
+      setTheme(savedTheme);
+      setMounted(true);
+    }, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleToggle = (e) => {

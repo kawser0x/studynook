@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import { FaStar, FaQuoteLeft } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 const reviews = [
   {
@@ -41,10 +44,9 @@ const RatingPage = () => {
   return (
     <section className="bg-base-200/40 py-7 px-4 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-     
         <div className="text-center max-w-2xl mx-auto mb-12">
           <div className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold mb-3">
-            <FaStar className="text-white h-3 w-3" /> Community Feedback
+            <FaStar className="text-primary h-3 w-3" /> Community Feedback
           </div>
           <h2 className="text-3xl font-extrabold tracking-tight text-base-content sm:text-4xl">
             Loved by{" "}
@@ -57,10 +59,14 @@ const RatingPage = () => {
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {reviews.map((review) => (
-            <div
+          {reviews.map((review, index) => (
+            <motion.div
               key={review.id}
-              className="card border border-base-300 bg-base-100 p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md justify-between">
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              whileHover={{ y: -5, scale: 1.015 }}
+              transition={{ delay: index * 0.1, duration: 0.3 }}
+              className="card border border-base-300 bg-base-100 p-6 shadow-sm hover:shadow-xl transition-shadow duration-300 justify-between">
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex gap-1 text-warning">
@@ -77,7 +83,7 @@ const RatingPage = () => {
                 </div>
 
                 <p className="text-sm text-base-content/80 leading-relaxed italic">
-                  "{review.comment}"
+                  &quot;{review.comment}&quot;
                 </p>
               </div>
 
@@ -103,7 +109,7 @@ const RatingPage = () => {
                   {review.date}
                 </span>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
@@ -112,3 +118,4 @@ const RatingPage = () => {
 };
 
 export default RatingPage;
+

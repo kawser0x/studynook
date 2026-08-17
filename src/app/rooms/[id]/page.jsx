@@ -5,33 +5,62 @@ import RoomActionCard from "@/components/RoomActionCard";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 
-export const metadata = {
-  title: "StudyNook - Room Details page",
-  description: "Rooms are shows type by type",
-};
+export async function generateMetadata({ params }) {
+  const { id } = await params;
+  try {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    if (backendUrl && id) {
+      const res = await fetch(`${backendUrl}/rooms/${id}`, { cache: "no-store" });
+      if (res.ok) {
+        const room = await res.json();
+        return {
+          title: room?.name ? `${room.name} - Room Details` : "Room Details",
+          description: room?.shortDescription || "View details and reserve this quiet study space.",
+        };
+      }
+    }
+  } catch (e) {}
+
+  return {
+    title: "Room Details",
+    description: "View details and reserve quiet study spaces on StudyNook.",
+  };
+}
 
 const RoomDetails = async ({ params }) => {
   const { id } = await params;
   let room = null;
-  const { token } = await auth.api.getToken({
-    headers: await headers(),
-  });
+  let token = null;
 
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/rooms/${id}`,
-      {
-        headers: {
-          authorization: `"breare" ${token}`,
-        },
-      },
-    );
-    if (res.ok) {
-      room = await res.json();
+    const authRes = await auth.api.getToken({
+      headers: await headers(),
+    });
+    token = authRes?.token;
+  } catch (e) {
+    // Unauthenticated user viewing room details
+  }
+
+  try {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    if (backendUrl && id) {
+      const headersObj = {};
+      if (token) {
+        headersObj.authorization = `Bearer ${token}`;
+      }
+
+      const res = await fetch(`${backendUrl}/rooms/${id}`, {
+        headers: headersObj,
+        cache: "no-store",
+      });
+      if (res.ok) {
+        room = await res.json();
+      }
     }
   } catch (error) {
     console.error("Error fetching room details:", error);
   }
+
 
   if (!room) {
     return (

@@ -1,13 +1,23 @@
 import Link from "next/link";
 import AllRooms from "@/components/AllRooms";
 import { FaArrowRight } from "react-icons/fa";
-import { toast } from "react-toastify";
 
 const HomeRoomPage = async () => {
   let rooms = [];
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/rooms`);
-  rooms = await res.json();
+  try {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    if (backendUrl) {
+      const res = await fetch(`${backendUrl}/rooms`, {
+        cache: "no-store",
+      });
+      if (res.ok) {
+        rooms = await res.json();
+      }
+    }
+  } catch (error) {
+    console.error("Error fetching home rooms:", error);
+  }
 
   const latestRooms = Array.isArray(rooms) ? rooms.slice(0, 6) : [];
 
@@ -46,3 +56,4 @@ const HomeRoomPage = async () => {
 };
 
 export default HomeRoomPage;
+

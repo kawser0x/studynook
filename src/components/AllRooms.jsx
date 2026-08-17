@@ -1,6 +1,9 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { FaUserFriends, FaLayerGroup } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 const AllRooms = ({ room }) => {
   const {
@@ -18,7 +21,12 @@ const AllRooms = ({ room }) => {
   const remainingCount = amenities.length - 3;
 
   return (
-    <div className="card border border-base-300 bg-base-200/60 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -6, scale: 1.015 }}
+      transition={{ duration: 0.25 }}
+      className="card border border-base-300 bg-base-200/60 shadow-sm hover:shadow-xl transition-shadow duration-300">
       <figure className="relative h-48 w-full overflow-hidden bg-base-300">
         <Image
           src={
@@ -28,7 +36,7 @@ const AllRooms = ({ room }) => {
           alt={name || "Study Room"}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-cover transition-transform duration-300 hover:scale-105"
+          className="object-cover transition-transform duration-500 hover:scale-105"
         />
 
         <span className="absolute top-3 right-3 z-10 rounded-lg bg-secondary px-2.5 py-1 text-xs font-bold text-secondary-content shadow">
@@ -59,7 +67,7 @@ const AllRooms = ({ room }) => {
             {visibleAmenities.map((amenity, index) => (
               <span
                 key={index}
-                className="badge badge-outline  text-[11px] py-2 px-2">
+                className="badge badge-outline text-[11px] py-2 px-2">
                 {amenity}
               </span>
             ))}
@@ -79,8 +87,9 @@ const AllRooms = ({ room }) => {
           </Link>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
 export default AllRooms;
+

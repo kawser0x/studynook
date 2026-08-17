@@ -40,18 +40,25 @@ const RoomsClient = () => {
         params.append("amenities", selectedAmenities.join(","));
       }
 
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+      if (!backendUrl) {
+        setRooms([]);
+        setLoading(false);
+        return;
+      }
+
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/rooms?${params.toString()}`,
+        `${backendUrl}/rooms?${params.toString()}`,
       );
       const data = await res.json();
       const loadedRooms = Array.isArray(data) ? data : [];
       setRooms(loadedRooms);
 
-      if (availableFloors.length === 0 && loadedRooms.length > 0) {
+      if (loadedRooms.length > 0) {
         const floors = Array.from(
           new Set(loadedRooms.map((r) => r.floor).filter(Boolean)),
         );
-        setAvailableFloors(floors);
+        setAvailableFloors((prev) => (prev.length === 0 ? floors : prev));
       }
     } catch (error) {
       console.error("Failed to load rooms:", error);
