@@ -5,10 +5,15 @@ import RoomActionCard from "@/components/RoomActionCard";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 
+export const metadata = {
+  title: "StudyNook - Room Details page",
+  description: "Rooms are shows type by type",
+};
+
 const RoomDetails = async ({ params }) => {
   const { id } = await params;
   let room = null;
-  const {token} = await auth.api.getToken({
+  const { token } = await auth.api.getToken({
     headers: await headers(),
   });
 

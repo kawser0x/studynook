@@ -2,12 +2,14 @@ import Link from "next/link";
 import AllRooms from "@/components/AllRooms";
 import { FaArrowRight } from "react-icons/fa";
 
+
+
 const HomeRoomPage = async () => {
   let rooms = [];
 
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/rooms`, {
-      cache: "no-store",
+      
     });
     if (res.ok) {
       rooms = await res.json();
