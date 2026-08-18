@@ -35,7 +35,6 @@ const SignInClient = () => {
       {
         onSuccess: async (ctx) => {
           toast.success("Welcome back to StudyNook!");
-          // Issue JWT HTTP-only cookie on server
           try {
             const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
             if (backendUrl) {
@@ -62,10 +61,19 @@ const SignInClient = () => {
   };
 
   const handleGoogleSignIn = async () => {
-    await authClient.signIn.social({
-      provider: "google",
-      callbackURL: "/",
-    });
+    try {
+      const callbackURL =
+        typeof window !== "undefined" ? window.location.origin + "/" : "/";
+      await authClient.signIn.social({
+        provider: "google",
+        callbackURL,
+      });
+    } catch (err) {
+      console.error("Google Sign-In Error:", err);
+      toast.error(
+        err.message || "Google sign-in failed. Please check Google OAuth settings."
+      );
+    }
   };
 
   return (

@@ -50,7 +50,6 @@ const SignUpClient = () => {
         {
           onSuccess: async () => {
             toast.success("Registration successful! Please login.");
-            // Set JWT cookie on server as well
             try {
               const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
               if (backendUrl) {
@@ -83,12 +82,15 @@ const SignUpClient = () => {
 
   const handleGoogleSignUp = async () => {
     try {
+      const callbackURL =
+        typeof window !== "undefined" ? window.location.origin + "/" : "/";
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/",
+        callbackURL,
       });
     } catch (err) {
-      toast.error("Google sign up failed");
+      console.error("Google Sign-Up Error:", err);
+      toast.error("Google sign up failed. Please check Google OAuth settings.");
     }
   };
 
@@ -212,7 +214,8 @@ const SignUpClient = () => {
                     required: "Photo URL is required",
                     pattern: {
                       value: /^https?:\/\/.+/i,
-                      message: "Must be a valid image URL starting with http/https",
+                      message:
+                        "Must be a valid image URL starting with http/https",
                     },
                   })}
                 />
