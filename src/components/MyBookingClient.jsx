@@ -10,6 +10,7 @@ import {
   FaBan,
   FaCheckCircle,
   FaTimesCircle,
+  FaTrashAlt,
 } from "react-icons/fa";
 import { motion } from "framer-motion";
 
@@ -18,7 +19,8 @@ const MyBookingClient = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedBooking, setSelectedBooking] = useState(null);
-  const [isCancelling, setIsCancelling] = useState(false);
+  const [actionType, setActionType] = useState(null); // "cancel" | "delete"
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const userEmail = session?.user?.email;
 
@@ -67,51 +69,71 @@ const MyBookingClient = () => {
     };
   }, [sessionLoading, fetchBookings]);
 
-  const handleCancelBooking = async () => {
-    if (!selectedBooking) return;
-    setIsCancelling(true);
+  const handleConfirmAction = async () => {
+    if (!selectedBooking || !actionType) return;
+    setIsProcessing(true);
 
     try {
       const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
       if (!backendUrl) {
         toast.error("Backend URL is not configured");
-        setIsCancelling(false);
+        setIsProcessing(false);
         return;
       }
-      const res = await fetch(
-        `${backendUrl}/bookings/${selectedBooking._id}/cancel`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            "user-email": userEmail || "",
-          },
-        }
-      );
 
-      const result = await res.json();
-      if (!res.ok) throw new Error(result.message || "Failed to cancel booking");
+      if (actionType === "cancel") {
+        const res = await fetch(
+          `${backendUrl}/bookings/${selectedBooking._id}/cancel`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              "user-email": userEmail || "",
+            },
+          }
+        );
 
-      setBookings((prev) =>
-        prev.map((b) =>
-          b._id === selectedBooking._id ? { ...b, status: "cancelled" } : b
-        )
-      );
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.message || "Failed to cancel booking");
 
-      toast.success("Booking cancelled");
-      document.getElementById("cancel_modal")?.close();
+        setBookings((prev) =>
+          prev.map((b) =>
+            b._id === selectedBooking._id ? { ...b, status: "cancelled" } : b
+          )
+        );
+        toast.success("Booking cancelled");
+      } else if (actionType === "delete") {
+        const res = await fetch(
+          `${backendUrl}/bookings/${selectedBooking._id}`,
+          {
+            method: "DELETE",
+            headers: {
+              "user-email": userEmail || "",
+            },
+          }
+        );
+
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.message || "Failed to remove booking");
+
+        setBookings((prev) => prev.filter((b) => b._id !== selectedBooking._id));
+        toast.success("Booking removed");
+      }
+
+      document.getElementById("booking_action_modal")?.close();
       setSelectedBooking(null);
+      setActionType(null);
     } catch (err) {
-      toast.error(err.message || "Failed to cancel reservation");
+      toast.error(err.message || "Action failed");
     } finally {
-      setIsCancelling(false);
+      setIsProcessing(false);
     }
   };
 
-  const isCancellable = (booking) => {
-    if (booking.status !== "confirmed") return false;
-    const today = new Date().toISOString().split("T")[0];
-    return booking.date >= today;
+  const openActionModal = (booking, type) => {
+    setSelectedBooking(booking);
+    setActionType(type);
+    document.getElementById("booking_action_modal")?.showModal();
   };
 
   return (
@@ -126,7 +148,7 @@ const MyBookingClient = () => {
             My Study Reservations
           </h1>
           <p className="mt-1 text-sm text-base-content/70">
-            View, track, and manage your booked study pods and team rooms.
+            View, track, cancel, and manage your booked study pods and team rooms.
           </p>
         </div>
 
@@ -215,19 +237,24 @@ const MyBookingClient = () => {
                       )}
                     </td>
                     <td className="text-right">
-                      {isCancellable(b) && (
+                      <div className="flex items-center justify-end gap-1.5">
+                        {b.status === "confirmed" && (
+                          <button
+                            type="button"
+                            onClick={() => openActionModal(b, "cancel")}
+                            className="btn btn-outline btn-error btn-xs gap-1">
+                            <FaBan className="h-3 w-3" /> Cancel
+                          </button>
+                        )}
+
                         <button
                           type="button"
-                          onClick={() => {
-                            setSelectedBooking(b);
-                            document
-                              .getElementById("cancel_modal")
-                              ?.showModal();
-                          }}
-                          className="btn btn-outline btn-error btn-xs gap-1">
-                          <FaBan /> Cancel
+                          onClick={() => openActionModal(b, "delete")}
+                          title="Remove booking from list"
+                          className="btn btn-ghost btn-xs text-error hover:bg-error/10">
+                          <FaTrashAlt className="h-3 w-3" /> Remove
                         </button>
-                      )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -237,28 +264,43 @@ const MyBookingClient = () => {
         )}
 
         <dialog
-          id="cancel_modal"
+          id="booking_action_modal"
           className="modal modal-bottom sm:modal-middle">
           <div className="modal-box bg-base-100 border border-base-300">
             <h3 className="text-lg font-bold text-error">
-              Confirm Reservation Cancellation
+              {actionType === "cancel"
+                ? "Confirm Cancellation"
+                : "Remove Booking Record"}
             </h3>
             <p className="py-3 text-sm text-base-content/80">
-              Are you sure you want to cancel your reservation for{" "}
-              <strong>{selectedBooking?.roomName}</strong> on{" "}
-              <strong>{selectedBooking?.date}</strong> (
-              {selectedBooking?.startTime} - {selectedBooking?.endTime})?
+              {actionType === "cancel" ? (
+                <>
+                  Are you sure you want to cancel your reservation for{" "}
+                  <strong>{selectedBooking?.roomName}</strong> on{" "}
+                  <strong>{selectedBooking?.date}</strong> (
+                  {selectedBooking?.startTime} - {selectedBooking?.endTime})?
+                </>
+              ) : (
+                <>
+                  Are you sure you want to remove the booking record for{" "}
+                  <strong>{selectedBooking?.roomName}</strong>?
+                </>
+              )}
             </p>
             <div className="modal-action">
               <form method="dialog">
-                <button className="btn btn-ghost btn-sm">Keep Booking</button>
+                <button className="btn btn-ghost btn-sm">Keep</button>
               </form>
               <button
                 type="button"
-                onClick={handleCancelBooking}
-                disabled={isCancelling}
+                onClick={handleConfirmAction}
+                disabled={isProcessing}
                 className="btn btn-error btn-sm text-white">
-                {isCancelling ? "Cancelling..." : "Yes, Cancel Booking"}
+                {isProcessing
+                  ? "Processing..."
+                  : actionType === "cancel"
+                  ? "Yes, Cancel Booking"
+                  : "Remove Booking"}
               </button>
             </div>
           </div>

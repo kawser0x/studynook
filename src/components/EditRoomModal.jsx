@@ -9,6 +9,7 @@ import { authClient } from "@/lib/auth-client";
 
 const EditRoomModal = ({ room = {} }) => {
   const router = useRouter();
+  const { data: session } = authClient.useSession();
 
   const modalId = `edit_modal_${room?._id || "new"}`;
 
@@ -76,6 +77,7 @@ const EditRoomModal = ({ room = {} }) => {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+          "user-email": session?.user?.email || "",
         },
         body: JSON.stringify(formattedData),
       });

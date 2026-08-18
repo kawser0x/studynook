@@ -152,7 +152,7 @@ const MyListingsClient = () => {
                     </span>
                   </div>
 
-                  <div className="card-actions mt-4 grid grid-cols-2 gap-2">
+                  <div className="card-actions mt-4 grid grid-cols-1 space-y-2">
                     <EditRoomModal room={room} />
                     <button
                       type="button"

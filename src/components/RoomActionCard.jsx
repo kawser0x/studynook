@@ -26,13 +26,12 @@ const RoomActionCard = ({ room }) => {
   const deleteModalId = `delete_modal_${room._id}`;
 
   const isOwner =
-    currentUser &&
-    (!room.userEmail && !room.ownerEmail
-      ? true
-      : room.userEmail === currentUser.email ||
-        room.ownerEmail === currentUser.email ||
-        room.userId === currentUser.id ||
-        room.ownerId === currentUser.id);
+    Boolean(currentUser?.email) &&
+    Boolean(room.userEmail || room.ownerEmail || room.userId || room.ownerId) &&
+    (room.userEmail === currentUser.email ||
+      room.ownerEmail === currentUser.email ||
+      (room.userId && room.userId === currentUser.id) ||
+      (room.ownerId && room.ownerId === currentUser.id));
 
   const handleDeleteRoom = async () => {
     setIsDeleting(true);
@@ -52,14 +51,17 @@ const RoomActionCard = ({ room }) => {
         },
       });
 
-      if (!res.ok) throw new Error("Failed to delete room");
+      if (!res.ok) {
+        const result = await res.json().catch(() => ({}));
+        throw new Error(result.message || "Failed to delete room");
+      }
 
       toast.success("Room deleted successfully");
       document.getElementById(deleteModalId)?.close();
       router.push("/rooms");
       router.refresh();
     } catch (error) {
-      toast.error("Failed to delete room");
+      toast.error(error.message || "Failed to delete room");
     } finally {
       setIsDeleting(false);
     }
@@ -120,7 +122,7 @@ const RoomActionCard = ({ room }) => {
         {isOwner && (
           <div className="mt-3 space-y-2 border-t border-base-300 pt-3">
             <p className="text-center text-[11px] font-bold uppercase tracking-wider text-base-content/60">
-              Owner Management
+              Owner Controls
             </p>
 
             <EditRoomModal room={room} />
@@ -142,7 +144,7 @@ const RoomActionCard = ({ room }) => {
       {isOwner && (
         <dialog id={deleteModalId} className="modal modal-bottom sm:modal-middle">
           <div className="modal-box bg-base-100 border border-base-300">
-            <h3 className="text-lg font-bold text-error">Confirm Deletion</h3>
+            <h3 className="text-lg font-bold text-error">Confirm Room Deletion</h3>
             <p className="py-3 text-sm text-base-content/80">
               Are you sure you want to permanently delete{" "}
               <strong>{room.name}</strong>? This action cannot be undone.
