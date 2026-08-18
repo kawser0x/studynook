@@ -1,46 +1,73 @@
-# StudyNook – Library Study Room Booking Platform
+# 📚 StudyNook – Library Study Room Booking Platform
 
-**Live Site URL:** [https://studynook.vercel.app](https://studynook.vercel.app)  
-**Client Repository:** [https://github.com/kawser0x/studynook](https://github.com/kawser0x/studynook)  
-**Server Repository:** [https://github.com/kawser0x/studynook-server](https://github.com/kawser0x/studynook-server)
+**Live Website URL:** [https://studynook-hazel.vercel.app/](https://studynook-hazel.vercel.app/)  
+**Frontend GitHub Repository:** [https://github.com/kawser0x/studynook](https://github.com/kawser0x/studynook)  
+**Backend GitHub Repository:** [https://github.com/kawser0x/studynook-server](https://github.com/kawser0x/studynook-server)
 
-StudyNook is a full-stack web application designed for students and library members to list, discover, search, filter, and reserve private study rooms and collaborative hubs. Equipped with automated time-conflict prevention, owner-only listing controls, JWT HTTP-only cookie security, and personal booking management dashboards.
-
----
-
-## Key Features
-
-- **Automated Double-Booking & Conflict Prevention**: Implements real-time time slot validation (`$gte` and `$lte` overlap checks) to ensure rooms are never double-booked for the same time slot.
-- **Secure JWT Authentication with HTTP-Only Cookies**: User authentication via email/password and Google OAuth, storing secure JWT tokens in HTTP-only cookies (`httpOnly: true`, `secure: true`, `sameSite: 'strict'`).
-- **Comprehensive Room Listing & Owner Controls**: Authenticated users can list new study spaces with customizable amenities (Whiteboard, Projector, Wi-Fi, Power Outlets, Quiet Zone, AC). Edit and Delete controls are strictly scoped to room owners.
-- **Advanced Search & Multi-Criteria Filtering**: Filter available study spaces dynamically on the `/rooms` page using room name search (`$regex`), amenity chips (`$in`), hourly rate ranges (`$gte`/`$lte`), and floor levels.
-- **Personal Booking & Reservation Management**: Every user enjoys a `/my-bookings` dashboard to track reservation statuses (`confirmed` vs `cancelled`), compute total hourly costs in real-time, and execute one-click cancellations for future dates.
-- **Responsive Dark/Light Theme & Framer Motion Animations**: Fully responsive layout across mobile, tablet, and desktop views with persistent dark/light theme toggles and smooth Framer Motion page transitions.
+StudyNook is a modern full-stack web application designed for university students and library users to browse, search, filter, and reserve private study rooms and collaborative hubs. Built with Next.js App Router and an Express/MongoDB backend, the platform features automated time-conflict prevention, owner-only listing management, secure JWT authentication in HTTP-only cookies, and personalized reservation dashboards.
 
 ---
 
-## Tech Stack
+## ✨ Key Features
 
-- **Frontend**: Next.js 16 (App Router), React 19, Tailwind CSS, DaisyUI, Framer Motion, React Toastify, React Icons
-- **Backend**: Node.js, Express 5, MongoDB Driver, Jose (JWT), Cookie Parser, CORS
+- 🔐 **Secure JWT Authentication & HTTP-Only Cookies**: Supports email/password registration and Google OAuth sign-in, persisting session tokens securely in HTTP-only cookies (`httpOnly: true`, `secure: true`, `sameSite: 'strict'`).
+- 🛡️ **Automated Time-Conflict Detection**: Real-time reservation engine checking overlapping time slots (`$gte` and `$lte`) to guarantee zero double-booking for any reserved room and date.
+- ⚙️ **Strict Owner-Only Listing Controls**: Room creators can list study spaces with customizable amenities (Whiteboard, Projector, Wi-Fi, Power Outlets, Quiet Zone, Air Conditioning). Edit and Delete controls are strictly scoped to room owners.
+- 🔍 **Advanced Multi-Criteria Search & Filtering**: Dynamically filter available study spaces on the `/rooms` page using room name search (`$regex`), amenity chips (`$in`), hourly rate range (`$gte`/`$lte`), and floor levels.
+- 📋 **Personal Reservation Dashboard (`/my-bookings`)**: View active reservations with real-time hourly cost calculation, status badges (`confirmed` in green, `cancelled` in red), and one-click cancellation with `$pull` database sync.
+- 🏢 **My Listings Management (`/my-listings`)**: A dedicated dashboard for room owners to manage, update details, or delete their listed study spaces.
+- 🎨 **Responsive Dark/Light Theme & Framer Motion**: Fully responsive layout across mobile, tablet, and desktop views with persistent dark/light theme toggles and smooth Framer Motion page transitions.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Framework**: Next.js 16 (App Router) & React 19
+- **Styling**: Tailwind CSS & DaisyUI 5
+- **Animations**: Framer Motion
+- **Icons**: React Icons (FaBookOpen, FaXTwitter, etc.)
 - **Authentication**: Better Auth & JWT HTTP-Only Cookies
+- **Notifications**: React Toastify
 
 ---
 
-## Getting Started Locally
+## 🚀 Getting Started Locally
 
-### 1. Server Setup (`studynook-server`)
-```bash
-cd studynook-server
-npm install
-npm run start
-```
+### Prerequisites
+- Node.js 18+ and npm installed
 
-### 2. Client Setup (`studynook`)
-```bash
-cd studynook
-npm install
-npm run dev
-```
+### Installation
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/kawser0x/studynook.git
+   cd studynook
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Configure Environment Variables (`.env`):**
+   ```env
+   NEXT_PUBLIC_BACKEND_URL=https://studynook-server.vercel.app # or http://localhost:5000
+   BETTER_AUTH_SECRET=your_auth_secret_key
+   BETTER_AUTH_URL=http://localhost:3000
+   NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3000
+   MONGODB_URI=your_mongodb_connection_string
+   GOOGLE_CLIENT_ID=your_google_client_id
+   GOOGLE_CLIENT_SECRET=your_google_client_secret
+   ```
+
+4. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
+
+   Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+---
+
+## 📄 License
+This project is licensed under the MIT License.
