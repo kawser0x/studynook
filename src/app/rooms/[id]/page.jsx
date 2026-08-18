@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { FaArrowLeft, FaCheckCircle, FaFire } from "react-icons/fa";
+import { FaArrowLeft, FaCheckCircle, FaFire, FaStar } from "react-icons/fa";
 import RoomActionCard from "@/components/RoomActionCard";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
@@ -84,6 +84,7 @@ const RoomDetails = async ({ params }) => {
     seatCapacity,
     bookingCount = 0,
     amenities = [],
+    rating = room.rating || 4.9,
   } = room;
 
   return (
@@ -120,6 +121,9 @@ const RoomDetails = async ({ params }) => {
                 </span>
                 <span className="badge badge-ghost text-xs">
                   Capacity: {seatCapacity}
+                </span>
+                <span className="badge badge-neutral gap-1 text-xs font-semibold text-warning">
+                  <FaStar className="h-3 w-3" /> {rating} / 5.0 Rating
                 </span>
                 {bookingCount > 0 && (
                   <span className="badge badge-warning gap-1 text-xs font-semibold">

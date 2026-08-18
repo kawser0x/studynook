@@ -2,6 +2,7 @@ import Hero from "@/components/Hero";
 import HomeRoomPage from "./homeroom/page";
 import WhyChooseUs from "@/components/WhyChooseUs";
 import HowItWorks from "@/components/HowItWorks";
+import RatingPage from "./rating/page";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +19,7 @@ export default function Home() {
       <HomeRoomPage />
       <WhyChooseUs />
       <HowItWorks />
+      <RatingPage />
     </div>
   );
 }

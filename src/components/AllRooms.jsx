@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { FaUserFriends, FaLayerGroup } from "react-icons/fa";
+import { FaUserFriends, FaLayerGroup, FaStar } from "react-icons/fa";
 import { motion } from "framer-motion";
 
 const AllRooms = ({ room }) => {
@@ -15,6 +15,7 @@ const AllRooms = ({ room }) => {
     seatCapacity,
     hourlyRate,
     amenities = [],
+    rating = room.rating || 4.9,
   } = room;
 
   const visibleAmenities = amenities.slice(0, 3);
@@ -38,6 +39,10 @@ const AllRooms = ({ room }) => {
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="object-cover transition-transform duration-500 hover:scale-105"
         />
+
+        <span className="absolute top-3 left-3 z-10 flex items-center gap-1 rounded-lg bg-black/60 backdrop-blur-md px-2.5 py-1 text-xs font-bold text-warning shadow">
+          <FaStar className="h-3 w-3" /> {rating}
+        </span>
 
         <span className="absolute top-3 right-3 z-10 rounded-lg bg-secondary px-2.5 py-1 text-xs font-bold text-secondary-content shadow">
           ${hourlyRate}/hr
@@ -92,4 +97,3 @@ const AllRooms = ({ room }) => {
 };
 
 export default AllRooms;
-
