@@ -33,15 +33,31 @@ const SignInClient = () => {
         password: data.password,
       },
       {
-        onSuccess: () => {
-          toast.success("Welcome back!");
+        onSuccess: async (ctx) => {
+          toast.success("Welcome back to StudyNook!");
+          // Issue JWT HTTP-only cookie on server
+          try {
+            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+            if (backendUrl) {
+              await fetch(`${backendUrl}/jwt`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  email: data.email,
+                  userId: ctx?.data?.user?.id || data.email,
+                }),
+              });
+            }
+          } catch (e) {
+            console.error("JWT Issue Error:", e);
+          }
           router.push("/");
           router.refresh();
         },
         onError: (ctx) => {
-          toast.error(ctx.error.message || "Invalid credentials");
+          toast.error(ctx.error.message || "Invalid email or password");
         },
-      },
+      }
     );
   };
 
@@ -127,11 +143,6 @@ const SignInClient = () => {
                     Password
                   </span>
                 </label>
-                <Link
-                  href="/forgot-password"
-                  className="link link-hover text-[11px] text-primary">
-                  Forgot password?
-                </Link>
               </div>
               <div className="relative">
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-base-content/40">
@@ -145,10 +156,6 @@ const SignInClient = () => {
                   }`}
                   {...register("password", {
                     required: "Password is required",
-                    minLength: {
-                      value: 6,
-                      message: "Password must be at least 6 characters",
-                    },
                   })}
                 />
                 <button
@@ -178,7 +185,7 @@ const SignInClient = () => {
                 {isSubmitting ? (
                   <span className="loading loading-spinner loading-sm" />
                 ) : (
-                  "Sign In"
+                  "Login"
                 )}
               </button>
             </div>
@@ -186,8 +193,8 @@ const SignInClient = () => {
 
           <p className="mt-6 text-center text-xs text-base-content/70">
             Don&apos;t have an account?{" "}
-            <Link href="/signup" className="link link-primary font-semibold">
-              Create an account
+            <Link href="/register" className="link link-primary font-semibold">
+              Register
             </Link>
           </p>
         </div>

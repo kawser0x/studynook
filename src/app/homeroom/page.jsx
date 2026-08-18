@@ -10,15 +10,19 @@ const HomeRoomPage = async () => {
   try {
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     if (backendUrl) {
-      const res = await fetch(`${backendUrl}/rooms`,);
+      // Use MongoDB sort() and limit() on backend to retrieve only latest 6 rooms
+      const res = await fetch(`${backendUrl}/rooms?limit=6&sort=latest`, {
+        cache: "no-store",
+      });
       if (res.ok) {
         rooms = await res.json();
       }
     }
   } catch (error) {
+    console.error("HomeRoomPage fetch error:", error);
   }
 
-  const latestRooms = Array.isArray(rooms) ? rooms.slice(0, 6) : [];
+  const latestRooms = Array.isArray(rooms) ? rooms : [];
 
   return (
     <section className="py-8 px-4 sm:px-6 lg:px-8 bg-base-100">
@@ -26,7 +30,7 @@ const HomeRoomPage = async () => {
         <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-8 gap-4">
           <div>
             <h2 className="text-3xl font-bold tracking-tight text-base-content sm:text-4xl">
-              Latest <span className="text-primary">Study Rooms</span>
+              Available <span className="text-primary">Study Rooms</span>
             </h2>
             <p className="mt-2 text-sm text-base-content/70">
               Discover newly listed quiet spaces and modern study hubs.
@@ -55,4 +59,3 @@ const HomeRoomPage = async () => {
 };
 
 export default HomeRoomPage;
-

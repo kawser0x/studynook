@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "react-toastify";
-import { authClient, getAuthToken } from "@/lib/auth-client";
+import { authClient } from "@/lib/auth-client";
 import {
   FaCalendarAlt,
   FaBan,
@@ -24,7 +24,6 @@ const MyBookingClient = () => {
 
   const fetchBookings = useCallback(
     async (signal) => {
-      const token = await getAuthToken();
       if (!userEmail) {
         setLoading(false);
         return;
@@ -38,7 +37,6 @@ const MyBookingClient = () => {
         const res = await fetch(`${backendUrl}/my-bookings`, {
           headers: {
             "user-email": userEmail,
-            ...(token ? { authorization: `Bearer ${token}` } : {}),
           },
           signal,
         });
@@ -54,7 +52,7 @@ const MyBookingClient = () => {
         setLoading(false);
       }
     },
-    [userEmail],
+    [userEmail]
   );
 
   useEffect(() => {
@@ -74,7 +72,6 @@ const MyBookingClient = () => {
     setIsCancelling(true);
 
     try {
-      const token = await getAuthToken();
       const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
       if (!backendUrl) {
         toast.error("Backend URL is not configured");
@@ -82,24 +79,30 @@ const MyBookingClient = () => {
         return;
       }
       const res = await fetch(
-        `${backendUrl}/bookings/${selectedBooking._id}`,
+        `${backendUrl}/bookings/${selectedBooking._id}/cancel`,
         {
-          method: "DELETE",
+          method: "PATCH",
           headers: {
+            "Content-Type": "application/json",
             "user-email": userEmail || "",
-            ...(token ? { authorization: `Bearer ${token}` } : {}),
           },
-        },
+        }
       );
-      if (!res.ok) throw new Error("Failed to delete booking");
 
-      setBookings((prev) => prev.filter((b) => b._id !== selectedBooking._id));
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.message || "Failed to cancel booking");
 
-      toast.success("Booking deleted successfully");
+      setBookings((prev) =>
+        prev.map((b) =>
+          b._id === selectedBooking._id ? { ...b, status: "cancelled" } : b
+        )
+      );
+
+      toast.success("Booking cancelled");
       document.getElementById("cancel_modal")?.close();
       setSelectedBooking(null);
     } catch (err) {
-      toast.error(err.message || "Failed to delete reservation");
+      toast.error(err.message || "Failed to cancel reservation");
     } finally {
       setIsCancelling(false);
     }

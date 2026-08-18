@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "react-toastify";
 import Theme from "./Theme";
-import { FaBookOpen, FaSignOutAlt, FaUserCircle } from "react-icons/fa";
+import { FaBookOpen, FaSignOutAlt, FaList, FaCalendarCheck, FaPlusCircle } from "react-icons/fa";
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -16,11 +16,20 @@ const Navbar = () => {
   const user = session?.user;
 
   const handleSignOut = async () => {
+    try {
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+      if (backendUrl) {
+        await fetch(`${backendUrl}/logout`, { method: "POST" });
+      }
+    } catch (e) {
+      console.error("Logout cookie clear error:", e);
+    }
+
     await authClient.signOut({
       fetchOptions: {
         onSuccess: () => {
           toast.success("Signed out successfully");
-          router.push("/signin");
+          router.push("/login");
           router.refresh();
         },
         onError: () => {
@@ -30,16 +39,24 @@ const Navbar = () => {
     });
   };
 
-  const links = [
+  const publicLinks = [
+    { name: "Home", href: "/" },
+    { name: "Rooms", href: "/rooms" },
+  ];
+
+  const privateLinks = [
     { name: "Home", href: "/" },
     { name: "Rooms", href: "/rooms" },
     { name: "Add Room", href: "/add-room" },
-    { name: "My Bookings", href: "/my-booking" },
+    { name: "My Listings", href: "/my-listings" },
+    { name: "My Bookings", href: "/my-bookings" },
   ];
+
+  const currentLinks = user ? privateLinks : publicLinks;
 
   const navLinks = (
     <>
-      {links.map((link) => {
+      {currentLinks.map((link) => {
         const isActive = pathname === link.href;
 
         return (
@@ -48,7 +65,7 @@ const Navbar = () => {
               href={link.href}
               className={`font-medium transition-colors ${
                 isActive
-                  ? "bg-primary text-primary-content font-semibold"
+                  ? "bg-primary text-white font-semibold"
                   : "text-base-content/80 hover:bg-base-200 hover:text-primary"
               }`}>
               {link.name}
@@ -57,18 +74,27 @@ const Navbar = () => {
         );
       })}
 
-      {!session && !isPending && (
-        <li className="sm:hidden border-t border-base-300 pt-1 mt-1">
-          <Link
-            href="/signin"
-            className={`font-medium transition-colors ${
-              pathname === "/signin"
-                ? "bg-primary text-primary-content font-semibold"
-                : "text-base-content/80 hover:bg-base-200 hover:text-primary"
-            }`}>
-            Sign In
-          </Link>
-        </li>
+      {!user && !isPending && (
+        <>
+          <li className="lg:hidden border-t border-base-300 pt-1 mt-1">
+            <Link
+              href="/login"
+              className={`font-medium ${
+                pathname === "/login" ? "bg-primary text-white font-semibold" : ""
+              }`}>
+              Login
+            </Link>
+          </li>
+          <li className="lg:hidden">
+            <Link
+              href="/register"
+              className={`font-medium ${
+                pathname === "/register" ? "bg-primary text-white font-semibold" : ""
+              }`}>
+              Register
+            </Link>
+          </li>
+        </>
       )}
     </>
   );
@@ -77,7 +103,6 @@ const Navbar = () => {
     <div className="sticky top-0 z-50 border-b border-base-300 bg-base-100/90 backdrop-blur-md">
       <div className="navbar mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
         <div className="navbar-start gap-1">
-      
           <div className="dropdown">
             <div
               tabIndex={0}
@@ -104,7 +129,6 @@ const Navbar = () => {
             </ul>
           </div>
 
-       
           <Link
             href="/"
             className="flex items-center gap-1.5 px-1 py-1 text-base font-bold tracking-tight text-primary sm:text-xl">
@@ -125,21 +149,20 @@ const Navbar = () => {
           {isPending ? (
             <span className="loading loading-spinner loading-sm text-primary" />
           ) : user ? (
-
             <div className="dropdown dropdown-end">
               <div
                 tabIndex={0}
                 role="button"
                 className="btn btn-ghost btn-sm flex items-center gap-2 rounded-full px-2">
                 <div className="avatar">
-                  <div className="relative h-7 w-7 rounded-full ring ring-primary ring-offset-1 ring-offset-base-100 overflow-hidden">
+                  <div className="relative h-8 w-8 rounded-full ring ring-primary ring-offset-1 ring-offset-base-100 overflow-hidden">
                     {user.image ? (
                       <Image
                         src={user.image}
                         alt={user.name || "User"}
                         fill
                         className="object-cover"
-                        sizes="28px"
+                        sizes="32px"
                       />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center bg-neutral text-[11px] font-bold text-neutral-content">
@@ -164,28 +187,43 @@ const Navbar = () => {
                     {user.email}
                   </span>
                 </li>
+                <li>
+                  <Link href="/add-room" className="flex items-center gap-2">
+                    <FaPlusCircle className="h-3.5 w-3.5 text-primary" /> Add Room
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/my-listings" className="flex items-center gap-2">
+                    <FaList className="h-3.5 w-3.5 text-primary" /> My Listings
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/my-bookings" className="flex items-center gap-2">
+                    <FaCalendarCheck className="h-3.5 w-3.5 text-primary" /> My Bookings
+                  </Link>
+                </li>
                 <li className="border-t border-base-300 mt-1 pt-1">
                   <button
                     onClick={handleSignOut}
                     className="flex items-center gap-2 text-error hover:bg-error/10">
-                    <FaSignOutAlt className="h-3.5 w-3.5" /> Sign Out
+                    <FaSignOutAlt className="h-3.5 w-3.5" /> Logout
                   </button>
                 </li>
               </ul>
             </div>
           ) : (
-            <>
+            <div className="flex items-center gap-2">
               <Link
-                href="/signin"
-                className="btn btn-primary btn-xs font-medium text-white  sm:inline-flex sm:btn-sm">
-                Sign In
+                href="/login"
+                className="btn btn-primary btn-xs font-medium text-white sm:btn-sm">
+                Login
               </Link>
               <Link
-                href="/signup"
-                className="btn btn-accent btn-xs text-white shadow-sm hover:opacity-90 sm:btn-sm">
-                Sign Up
+                href="/register"
+                className="btn btn-outline btn-primary btn-xs font-medium sm:btn-sm">
+                Register
               </Link>
-            </>
+            </div>
           )}
 
           <Theme />

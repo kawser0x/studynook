@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# StudyNook – Library Study Room Booking Platform
 
-## Getting Started
+**Live Site URL:** [https://studynook.vercel.app](https://studynook.vercel.app)  
+**Client Repository:** [https://github.com/kawser0x/studynook](https://github.com/kawser0x/studynook)  
+**Server Repository:** [https://github.com/kawser0x/studynook-server](https://github.com/kawser0x/studynook-server)
 
-First, run the development server:
+StudyNook is a full-stack web application designed for students and library members to list, discover, search, filter, and reserve private study rooms and collaborative hubs. Equipped with automated time-conflict prevention, owner-only listing controls, JWT HTTP-only cookie security, and personal booking management dashboards.
 
+---
+
+## Key Features
+
+- **Automated Double-Booking & Conflict Prevention**: Implements real-time time slot validation (`$gte` and `$lte` overlap checks) to ensure rooms are never double-booked for the same time slot.
+- **Secure JWT Authentication with HTTP-Only Cookies**: User authentication via email/password and Google OAuth, storing secure JWT tokens in HTTP-only cookies (`httpOnly: true`, `secure: true`, `sameSite: 'strict'`).
+- **Comprehensive Room Listing & Owner Controls**: Authenticated users can list new study spaces with customizable amenities (Whiteboard, Projector, Wi-Fi, Power Outlets, Quiet Zone, AC). Edit and Delete controls are strictly scoped to room owners.
+- **Advanced Search & Multi-Criteria Filtering**: Filter available study spaces dynamically on the `/rooms` page using room name search (`$regex`), amenity chips (`$in`), hourly rate ranges (`$gte`/`$lte`), and floor levels.
+- **Personal Booking & Reservation Management**: Every user enjoys a `/my-bookings` dashboard to track reservation statuses (`confirmed` vs `cancelled`), compute total hourly costs in real-time, and execute one-click cancellations for future dates.
+- **Responsive Dark/Light Theme & Framer Motion Animations**: Fully responsive layout across mobile, tablet, and desktop views with persistent dark/light theme toggles and smooth Framer Motion page transitions.
+
+---
+
+## Tech Stack
+
+- **Frontend**: Next.js 16 (App Router), React 19, Tailwind CSS, DaisyUI, Framer Motion, React Toastify, React Icons
+- **Backend**: Node.js, Express 5, MongoDB Driver, Jose (JWT), Cookie Parser, CORS
+- **Authentication**: Better Auth & JWT HTTP-Only Cookies
+
+---
+
+## Getting Started Locally
+
+### 1. Server Setup (`studynook-server`)
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cd studynook-server
+npm install
+npm run start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Client Setup (`studynook`)
+```bash
+cd studynook
+npm install
+npm run dev
+```
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Open [http://localhost:3000](http://localhost:3000) in your browser.

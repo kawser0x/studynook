@@ -5,14 +5,12 @@ import AllRooms from "@/components/AllRooms";
 import { FaSearch, FaTimes, FaFilter, FaRedo } from "react-icons/fa";
 
 const AVAILABLE_AMENITIES = [
-  "Warm Reading Lamps",
-  "Silent Zone",
-  "Padded Seating",
-  "USB-C Fast Charging",
+  "Whiteboard",
+  "Projector",
   "Wi-Fi",
-  "Mic System",
-  "High-Speed Wi-Fi",
-  "Water Cooler",
+  "Power Outlets",
+  "Quiet Zone",
+  "Air Conditioning",
 ];
 
 const RoomsClient = () => {
@@ -54,7 +52,7 @@ const RoomsClient = () => {
 
       if (loadedRooms.length > 0) {
         const floors = Array.from(
-          new Set(loadedRooms.map((r) => r.floor).filter(Boolean)),
+          new Set(loadedRooms.map((r) => r.floor).filter(Boolean))
         );
         setAvailableFloors((prev) => (prev.length === 0 ? floors : prev));
       }
@@ -77,7 +75,7 @@ const RoomsClient = () => {
     setSelectedAmenities((prev) =>
       prev.includes(amenity)
         ? prev.filter((item) => item !== amenity)
-        : [...prev, amenity],
+        : [...prev, amenity]
     );
   };
 
@@ -223,11 +221,10 @@ const RoomsClient = () => {
               <FaFilter className="h-5 w-5" />
             </div>
             <h3 className="mt-4 text-lg font-semibold text-base-content">
-              No rooms match your criteria
+              No rooms found
             </h3>
             <p className="mt-1 text-sm text-base-content/60">
-              Try removing some amenities or broadening your price and search
-              terms.
+              Try removing some amenities or broadening your price and search terms.
             </p>
             <button
               type="button"

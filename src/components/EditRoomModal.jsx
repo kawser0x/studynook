@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { FaEdit } from "react-icons/fa";
-import { authClient, getAuthToken } from "@/lib/auth-client";
+import { authClient } from "@/lib/auth-client";
 
 const EditRoomModal = ({ room = {} }) => {
   const router = useRouter();
@@ -71,13 +71,11 @@ const EditRoomModal = ({ room = {} }) => {
         toast.error("Backend URL is not configured");
         return;
       }
-      const token = await getAuthToken();
 
       const res = await fetch(`${backendUrl}/rooms/${room._id}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          ...(token ? { authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify(formattedData),
       });

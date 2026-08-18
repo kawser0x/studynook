@@ -13,7 +13,7 @@ import { motion } from "framer-motion";
 const Hero = () => {
   return (
     <div
-      className="hero min-h-[85vh] relative overflow-hidden bg-cover bg-center"
+      className="hero min-h-[80vh] relative overflow-hidden bg-cover bg-center"
       style={{
         backgroundImage: `url('https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=1920&q=80')`,
       }}>
@@ -39,17 +39,15 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.5 }}
             className="text-4xl sm:text-6xl font-extrabold tracking-tight leading-tight text-white">
-            Find Your Focus at <span className="text-accent">StudyNook</span>
+            Find Your Perfect <span className="text-accent">Study Room</span>
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.5 }}
-            className="py-6 text-base sm:text-lg text-white/80 max-w-2xl">
-            Book quiet acoustic solo booths, tech-ready seminar labs, and shared
-            study suites by the hour. Designed specifically for students and
-            remote learners.
+            className="py-6 text-base sm:text-lg text-white/90 max-w-2xl leading-relaxed">
+            Browse and book quiet, private study rooms in your library. List your own room and earn.
           </motion.p>
 
           <motion.div
@@ -61,10 +59,10 @@ const Hero = () => {
               <FaVolumeMute className="text-accent" /> Soundproof Pods
             </span>
             <span className="flex items-center gap-1.5 bg-black/30 backdrop-blur-md px-3 py-1 rounded-lg border border-white/10">
-              <FaWifi className="text-accent" /> Gigabit Wi-Fi
+              <FaWifi className="text-accent" /> High-Speed Wi-Fi
             </span>
             <span className="flex items-center gap-1.5 bg-black/30 backdrop-blur-md px-3 py-1 rounded-lg border border-white/10">
-              <FaClock className="text-accent" /> Instant Booking
+              <FaClock className="text-accent" /> Instant Reservation
             </span>
           </motion.div>
 
@@ -76,12 +74,12 @@ const Hero = () => {
             <Link
               href="/rooms"
               className="btn btn-primary text-white border-none shadow-lg hover:brightness-110 gap-2 sm:btn-wide">
-              <FaSearch className="h-4 w-4" /> Browse Study Rooms
+              <FaSearch className="h-4 w-4" /> Explore Rooms
             </Link>
             <Link
               href="/add-room"
               className="btn btn-outline text-white border-white/40 hover:bg-white/10 hover:border-white gap-2 sm:btn-wide">
-              Create a Space <FaArrowRight className="h-3 w-3" />
+              List Your Room <FaArrowRight className="h-3 w-3" />
             </Link>
           </motion.div>
         </motion.div>
@@ -91,4 +89,3 @@ const Hero = () => {
 };
 
 export default Hero;
-

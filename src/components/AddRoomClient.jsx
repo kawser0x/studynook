@@ -1,11 +1,26 @@
 "use client";
 
-import { authClient, getAuthToken } from "@/lib/auth-client";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import { authClient } from "@/lib/auth-client";
 import { motion } from "framer-motion";
 
+const AMENITY_OPTIONS = [
+  "Whiteboard",
+  "Projector",
+  "Wi-Fi",
+  "Power Outlets",
+  "Quiet Zone",
+  "Air Conditioning",
+];
+
 const AddRoomClient = () => {
+  const router = useRouter();
+  const { data: session } = authClient.useSession();
+  const [selectedAmenities, setSelectedAmenities] = useState([]);
+
   const {
     register,
     handleSubmit,
@@ -13,18 +28,33 @@ const AddRoomClient = () => {
     formState: { errors, isSubmitting },
   } = useForm();
 
+  const handleAmenityChange = (amenity) => {
+    if (selectedAmenities.includes(amenity)) {
+      setSelectedAmenities(selectedAmenities.filter((a) => a !== amenity));
+    } else {
+      setSelectedAmenities([...selectedAmenities, amenity]);
+    }
+  };
+
   const onSubmit = async (data) => {
+    if (selectedAmenities.length === 0) {
+      toast.error("Please select at least one amenity.");
+      return;
+    }
+
     try {
       const formattedData = {
-        ...data,
+        name: data.name,
+        shortDescription: data.shortDescription,
+        image: data.image,
+        floor: data.floor,
+        seatCapacity: data.seatCapacity,
         hourlyRate: Number(data.hourlyRate),
-        amenities: data.amenities
-          .split(",")
-          .map((item) => item.trim())
-          .filter((item) => item.length > 0),
+        amenities: selectedAmenities,
+        userEmail: session?.user?.email || "",
+        userId: session?.user?.id || session?.user?._id || "",
       };
 
-      const token = await getAuthToken();
       const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
       if (!backendUrl) {
         toast.error("Backend URL is not configured");
@@ -35,7 +65,7 @@ const AddRoomClient = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(token ? { authorization: `Bearer ${token}` } : {}),
+          "user-email": session?.user?.email || "",
         },
         body: JSON.stringify(formattedData),
       });
@@ -44,8 +74,12 @@ const AddRoomClient = () => {
       if (!res.ok) {
         throw new Error(result.message || "Failed to add room");
       }
-      toast.success("Room added successfully!");
+
+      toast.success("Room added successfully");
       reset();
+      setSelectedAmenities([]);
+      router.push("/my-listings");
+      router.refresh();
     } catch (error) {
       toast.error(error.message || "Failed to add room");
     }
@@ -63,18 +97,17 @@ const AddRoomClient = () => {
             Add a Study Room
           </h2>
           <p className="text-sm text-base-content/70">
-            Fill in the details below to list a new study or collaborative
-            space.
+            Fill in the details below to list a new private study space or team room.
           </p>
 
           <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-4">
             <div className="form-control">
               <label className="label">
-                <span className="label-text text-xl font-bold">Room Name</span>
+                <span className="label-text font-bold">Room Name *</span>
               </label>
               <input
                 type="text"
-                placeholder="e.g. Silent Solo Study Pod"
+                placeholder="e.g. Silent Focus Pod A"
                 className={`input input-bordered w-full ${errors.name ? "input-error" : ""}`}
                 {...register("name", { required: "Room name is required" })}
               />
@@ -87,9 +120,7 @@ const AddRoomClient = () => {
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text text-xl font-bold">
-                  Room Image URL
-                </span>
+                <span className="label-text font-bold">Room Image URL *</span>
               </label>
               <input
                 type="url"
@@ -106,21 +137,14 @@ const AddRoomClient = () => {
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text text-xl font-bold">
-                  Short Description (Max ~100 chars)
-                </span>
+                <span className="label-text font-bold">Description *</span>
               </label>
               <textarea
-                rows="2"
-                maxLength={120}
-                placeholder="Brief description for card display..."
+                rows="3"
+                placeholder="Detailed description of the study room..."
                 className={`textarea textarea-bordered w-full ${errors.shortDescription ? "textarea-error" : ""}`}
                 {...register("shortDescription", {
                   required: "Description is required",
-                  maxLength: {
-                    value: 110,
-                    message: "Keep description close to 100 characters",
-                  },
                 })}
               />
               {errors.shortDescription && (
@@ -133,11 +157,11 @@ const AddRoomClient = () => {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text text-xl font-bold">Floor</span>
+                  <span className="label-text font-bold">Floor *</span>
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Floor 3"
+                  placeholder="e.g. 3rd Floor"
                   className={`input input-bordered w-full ${errors.floor ? "input-error" : ""}`}
                   {...register("floor", { required: "Floor is required" })}
                 />
@@ -150,13 +174,11 @@ const AddRoomClient = () => {
 
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text text-xl font-bold">
-                    Seat Capacity
-                  </span>
+                  <span className="label-text font-bold">Seat Capacity *</span>
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. 2–4 people"
+                  placeholder="e.g. 4 people"
                   className={`input input-bordered w-full ${errors.seatCapacity ? "input-error" : ""}`}
                   {...register("seatCapacity", {
                     required: "Capacity is required",
@@ -171,9 +193,7 @@ const AddRoomClient = () => {
 
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text text-xl font-bold">
-                    Hourly Rate ($)
-                  </span>
+                  <span className="label-text font-bold">Hourly Rate ($) *</span>
                 </label>
                 <input
                   type="number"
@@ -195,36 +215,32 @@ const AddRoomClient = () => {
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text text-xl font-bold">
-                  Amenities (Comma separated)
-                </span>
+                <span className="label-text font-bold">Amenities *</span>
               </label>
-              <input
-                type="text"
-                placeholder="Wi-Fi, Whiteboard, Power Outlets, AC"
-                className={`input input-bordered w-full ${errors.amenities ? "input-error" : ""}`}
-                {...register("amenities", {
-                  required: "At least one amenity is required",
-                })}
-              />
-              <label className="label">
-                <span className="label-text-alt text-base-content/60">
-                  Tip: Enter items separated by commas. Max 3 will show as chips
-                  on cards.
-                </span>
-              </label>
-              {errors.amenities && (
-                <span className="mt-1 text-xs text-error">
-                  {errors.amenities.message}
-                </span>
-              )}
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 pt-1">
+                {AMENITY_OPTIONS.map((amenity) => (
+                  <label
+                    key={amenity}
+                    className="label cursor-pointer justify-start gap-2.5 rounded-lg border border-base-300 p-2.5 hover:bg-base-200/50">
+                    <input
+                      type="checkbox"
+                      checked={selectedAmenities.includes(amenity)}
+                      onChange={() => handleAmenityChange(amenity)}
+                      className="checkbox checkbox-primary checkbox-sm"
+                    />
+                    <span className="label-text text-xs font-medium">
+                      {amenity}
+                    </span>
+                  </label>
+                ))}
+              </div>
             </div>
 
             <div className="form-control mt-6">
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="btn btn-primary text-white w-full">
+                className="btn btn-primary text-white w-full shadow-md">
                 {isSubmitting ? "Adding Room..." : "Add Room"}
               </button>
             </div>

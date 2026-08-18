@@ -7,9 +7,7 @@ import { toast } from "react-toastify";
 import { authClient } from "@/lib/auth-client";
 import {
   FaCalendarAlt,
-  FaClock,
   FaDollarSign,
-  FaStickyNote,
 } from "react-icons/fa";
 
 const TIME_SLOTS = [
@@ -87,13 +85,11 @@ const BookRoomModal = ({ room }) => {
         return;
       }
 
-      const token = await getAuthToken();
-
       const res = await fetch(`${backendUrl}/bookings`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(token ? { authorization: `Bearer ${token}` } : {}),
+          "user-email": session?.user?.email || "",
         },
         body: JSON.stringify(payload),
       });
@@ -107,7 +103,7 @@ const BookRoomModal = ({ room }) => {
       toast.success("Room booked successfully!");
       document.getElementById(modalId)?.close();
       reset();
-      router.push("/my-booking");
+      router.push("/my-bookings");
       router.refresh();
     } catch (err) {
       toast.error(err.message);
@@ -133,7 +129,6 @@ const BookRoomModal = ({ room }) => {
           </p>
 
           <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-4">
-         
             <div className="form-control">
               <label className="label py-1">
                 <span className="label-text text-xs font-semibold">

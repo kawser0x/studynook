@@ -1,22 +1,23 @@
 import Hero from "@/components/Hero";
 import HomeRoomPage from "./homeroom/page";
-import RatingPage from "./rating/page";
+import WhyChooseUs from "@/components/WhyChooseUs";
+import HowItWorks from "@/components/HowItWorks";
 
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Home | StudyNook - Reserve Focus Study Rooms",
+  title: "StudyNook - Home",
   description:
-    "Find and book modern, quiet acoustic study pods, team rooms, and collaborative hubs with instant reservation.",
+    "Find and book quiet, private study rooms in your library. List your own room and earn.",
 };
 
 export default function Home() {
   return (
-    <div className="">
+    <div>
       <Hero />
       <HomeRoomPage />
-      <RatingPage />
+      <WhyChooseUs />
+      <HowItWorks />
     </div>
   );
 }
-

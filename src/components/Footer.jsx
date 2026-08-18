@@ -1,17 +1,12 @@
 import Link from "next/link";
-import {
-  FaFacebookF,
-  FaTwitter,
-  FaLinkedinIn,
-  FaInstagram,
-} from "react-icons/fa";
+import { FaFacebookF, FaLinkedinIn, FaInstagram } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 
 const Footer = () => {
   return (
     <footer className="border-t border-base-300 bg-base-200/50 text-base-content">
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3 lg:grid-cols-4">
-      
           <div className="space-y-3 md:col-span-1 lg:col-span-1">
             <Link
               href="/"
@@ -68,14 +63,14 @@ const Footer = () => {
               <li>
                 Email:{" "}
                 <a
-                  href="support@studynook.com"
+                  href="mailto:support@studynook.com"
                   className="hover:text-primary">
                   support@studynook.com
                 </a>
               </li>
               <li>
                 Phone:{" "}
-                <a href="" className="hover:text-primary">
+                <a href="tel:+8801823456798" className="hover:text-primary">
                   +8801823-456798
                 </a>
               </li>
@@ -96,12 +91,12 @@ const Footer = () => {
                 <FaFacebookF className="h-4 w-4" />
               </a>
               <a
-                href="https://twitter.com"
+                href="https://x.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="X (Twitter)"
+                aria-label="X (formerly Twitter)"
                 className="flex h-9 w-9 items-center justify-center rounded-full bg-base-300 text-base-content transition-colors hover:bg-primary hover:text-white">
-                <FaTwitter className="h-4 w-4" />
+                <FaXTwitter className="h-4 w-4" />
               </a>
               <a
                 href="https://linkedin.com"

@@ -21,43 +21,75 @@ import { motion } from "framer-motion";
 const SignUpClient = () => {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors, isSubmitting },
   } = useForm();
 
-  const password = watch("password");
+  const validatePassword = (value) => {
+    if (!value) return "Password is required";
+    if (value.length < 6) return "Password must be at least 6 characters long";
+    if (!/[A-Z]/.exec(value))
+      return "Password must contain at least one uppercase letter (A-Z)";
+    if (!/[a-z]/.exec(value))
+      return "Password must contain at least one lowercase letter (a-z)";
+    return true;
+  };
 
   const onSubmit = async (data) => {
-    await authClient.signUp.email(
-      {
-        name: data.name,
-        email: data.email,
-        password: data.password,
-        image: data.image || undefined,
-      },
-      {
-        onSuccess: () => {
-          toast.success("Account created successfully! Welcome to StudyNook.");
-          router.push("/");
-          router.refresh();
+    try {
+      await authClient.signUp.email(
+        {
+          name: data.name,
+          email: data.email,
+          password: data.password,
+          image: data.image,
         },
-        onError: (ctx) => {
-          toast.error(ctx.error.message || "Registration failed. Try again.");
-        },
-      },
-    );
+        {
+          onSuccess: async () => {
+            toast.success("Registration successful! Please login.");
+            // Set JWT cookie on server as well
+            try {
+              const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+              if (backendUrl) {
+                await fetch(`${backendUrl}/jwt`, {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    email: data.email,
+                    userId: data.email,
+                  }),
+                });
+              }
+            } catch (e) {
+              console.error("JWT sync error:", e);
+            }
+            router.push("/login");
+            router.refresh();
+          },
+          onError: (ctx) => {
+            toast.error(
+              ctx.error.message || "Registration failed. Please try again."
+            );
+          },
+        }
+      );
+    } catch (err) {
+      toast.error(err.message || "Registration failed");
+    }
   };
 
   const handleGoogleSignUp = async () => {
-    await authClient.signIn.social({
-      provider: "google",
-      callbackURL: "/",
-    });
+    try {
+      await authClient.signIn.social({
+        provider: "google",
+        callbackURL: "/",
+      });
+    } catch (err) {
+      toast.error("Google sign up failed");
+    }
   };
 
   return (
@@ -87,7 +119,7 @@ const SignUpClient = () => {
               type="button"
               onClick={handleGoogleSignUp}
               className="btn btn-outline w-full gap-2 border-base-300 bg-base-100 hover:bg-base-200 hover:border-base-300 text-xs sm:text-sm font-medium">
-              <FaGoogle className="text-error" /> Sign up with Google
+              <FaGoogle className="text-error" /> Continue with Google
             </button>
           </div>
 
@@ -99,7 +131,7 @@ const SignUpClient = () => {
             <div className="form-control">
               <label className="label py-1">
                 <span className="label-text text-xs font-semibold">
-                  Full Name
+                  Full Name <span className="text-error">*</span>
                 </span>
               </label>
               <div className="relative">
@@ -108,12 +140,12 @@ const SignUpClient = () => {
                 </span>
                 <input
                   type="text"
-                  placeholder="Alex Rivera"
+                  placeholder="John Doe"
                   className={`input input-bordered input-sm sm:input-md w-full pl-9 ${
                     errors.name ? "input-error" : ""
                   }`}
                   {...register("name", {
-                    required: "Full name is required",
+                    required: "Name is required",
                     minLength: {
                       value: 2,
                       message: "Name must be at least 2 characters",
@@ -131,7 +163,7 @@ const SignUpClient = () => {
             <div className="form-control">
               <label className="label py-1">
                 <span className="label-text text-xs font-semibold">
-                  Email Address
+                  Email Address <span className="text-error">*</span>
                 </span>
               </label>
               <div className="relative">
@@ -140,7 +172,7 @@ const SignUpClient = () => {
                 </span>
                 <input
                   type="email"
-                  placeholder="name@university.edu"
+                  placeholder="student@university.edu"
                   className={`input input-bordered input-sm sm:input-md w-full pl-9 ${
                     errors.email ? "input-error" : ""
                   }`}
@@ -163,10 +195,7 @@ const SignUpClient = () => {
             <div className="form-control">
               <label className="label py-1">
                 <span className="label-text text-xs font-semibold">
-                  Profile Photo URL{" "}
-                  <span className="text-base-content/50 font-normal">
-                    (Optional)
-                  </span>
+                  Photo URL <span className="text-error">*</span>
                 </span>
               </label>
               <div className="relative">
@@ -176,16 +205,29 @@ const SignUpClient = () => {
                 <input
                   type="url"
                   placeholder="https://images.unsplash.com/photo-..."
-                  className="input input-bordered input-sm sm:input-md w-full pl-9"
-                  {...register("image")}
+                  className={`input input-bordered input-sm sm:input-md w-full pl-9 ${
+                    errors.image ? "input-error" : ""
+                  }`}
+                  {...register("image", {
+                    required: "Photo URL is required",
+                    pattern: {
+                      value: /^https?:\/\/.+/i,
+                      message: "Must be a valid image URL starting with http/https",
+                    },
+                  })}
                 />
               </div>
+              {errors.image && (
+                <span className="mt-1 text-[11px] text-error">
+                  {errors.image.message}
+                </span>
+              )}
             </div>
 
             <div className="form-control">
               <label className="label py-1">
                 <span className="label-text text-xs font-semibold">
-                  Password
+                  Password <span className="text-error">*</span>
                 </span>
               </label>
               <div className="relative">
@@ -199,11 +241,7 @@ const SignUpClient = () => {
                     errors.password ? "input-error" : ""
                   }`}
                   {...register("password", {
-                    required: "Password is required",
-                    minLength: {
-                      value: 6,
-                      message: "Password must be at least 6 characters",
-                    },
+                    validate: validatePassword,
                   })}
                 />
                 <button
@@ -219,51 +257,8 @@ const SignUpClient = () => {
                 </button>
               </div>
               {errors.password && (
-                <span className="mt-1 text-[11px] text-error">
+                <span className="mt-1 text-[11px] text-error font-medium">
                   {errors.password.message}
-                </span>
-              )}
-            </div>
-
-            <div className="form-control">
-              <label className="label py-1">
-                <span className="label-text text-xs font-semibold">
-                  Confirm Password
-                </span>
-              </label>
-              <div className="relative">
-                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-base-content/40">
-                  <FaLock className="h-3.5 w-3.5" />
-                </span>
-                <input
-                  type={showConfirmPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  className={`input input-bordered input-sm sm:input-md w-full pl-9 pr-10 ${
-                    errors.confirmPassword ? "input-error" : ""
-                  }`}
-                  {...register("confirmPassword", {
-                    required: "Please confirm your password",
-                    validate: (val) =>
-                      val === password || "Passwords do not match",
-                  })}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  aria-label={
-                    showConfirmPassword ? "Hide password" : "Show password"
-                  }
-                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-base-content/50 hover:text-base-content focus:outline-none">
-                  {!showConfirmPassword ? (
-                    <FaEyeSlash className="h-4 w-4" />
-                  ) : (
-                    <FaEye className="h-4 w-4" />
-                  )}
-                </button>
-              </div>
-              {errors.confirmPassword && (
-                <span className="mt-1 text-[11px] text-error">
-                  {errors.confirmPassword.message}
                 </span>
               )}
             </div>
@@ -276,7 +271,7 @@ const SignUpClient = () => {
                 {isSubmitting ? (
                   <span className="loading loading-spinner loading-sm" />
                 ) : (
-                  "Create Account"
+                  "Register"
                 )}
               </button>
             </div>
@@ -284,8 +279,8 @@ const SignUpClient = () => {
 
           <p className="mt-5 text-center text-xs text-base-content/70">
             Already have an account?{" "}
-            <Link href="/signin" className="link link-primary font-semibold">
-              Sign In
+            <Link href="/login" className="link link-primary font-semibold">
+              Login
             </Link>
           </p>
         </div>

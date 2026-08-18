@@ -1,5 +1,4 @@
 import { betterAuth } from "better-auth";
-import { jwt } from "better-auth/plugins";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { MongoClient } from "mongodb";
 
@@ -8,14 +7,10 @@ let client;
 let db;
 
 if (uri) {
-  if (process.env.NODE_ENV === "development") {
-    if (!global._mongoClient) {
-      global._mongoClient = new MongoClient(uri);
-    }
-    client = global._mongoClient;
-  } else {
-    client = new MongoClient(uri);
+  if (!global._mongoClient) {
+    global._mongoClient = new MongoClient(uri);
   }
+  client = global._mongoClient;
   db = client.db("studynook");
 }
 
@@ -36,8 +31,10 @@ export const auth = betterAuth({
       maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
     },
   },
-  plugins: [jwt()],
   secret: process.env.BETTER_AUTH_SECRET,
-  baseURL: process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_BETTER_AUTH_URL,
+  baseURL:
+    process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_BETTER_AUTH_URL,
 });
+
+
 
